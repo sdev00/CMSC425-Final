@@ -24,7 +24,7 @@ public class ShowStats : MonoBehaviour
         string dist;
         if (Physics.Raycast(r, out hit))
         {
-            dist = "" + (int) hit.distance;
+            dist = "" + (int) RoundToSignificantDigits(hit.distance, 2);
         }
         else
         {
@@ -34,5 +34,14 @@ public class ShowStats : MonoBehaviour
 
         text.text = "Speed: " + (int) rb.velocity.magnitude + " m/s" + 
             "\n" + "Distance: " + dist + " m";
+    }
+
+    double RoundToSignificantDigits(float d, int digits)
+    {
+        if (d == 0)
+            return 0;
+
+        float scale = Mathf.Pow(10, Mathf.Floor(Mathf.Log10(Mathf.Abs(d))) + 1);
+        return scale * Mathf.Round(d * Mathf.Pow(10, digits) / scale) / Mathf.Pow(10, digits);
     }
 }

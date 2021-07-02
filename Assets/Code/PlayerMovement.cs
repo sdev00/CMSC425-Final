@@ -5,9 +5,9 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public int sensitivity = 100;
-    private float acceleration = 80;
+    private float acceleration = 120;
     private float abilityRecharge = 3;
-    private float abilitySpeed = 500;
+    private float abilitySpeed = 1500;
     private int sensitivityAdjustment = 20;
     private float playerAngleY = 0;
     private float playerAngleX = 0;
