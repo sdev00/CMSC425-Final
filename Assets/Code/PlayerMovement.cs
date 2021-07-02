@@ -11,6 +11,7 @@ public class PlayerMovement : MonoBehaviour
     private int sensitivityAdjustment = 20;
     private float playerAngleY = 0;
     private float playerAngleX = 0;
+    private float maxPlayerAngleX = 90;
 
     private Rigidbody rb;
 
@@ -18,7 +19,7 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        //Cursor.lockState = CursorLockMode.Locked;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     // Update is called once per frame
@@ -36,7 +37,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         playerAngleY += Input.GetAxis("Mouse X") * sensitivity / sensitivityAdjustment;
-        playerAngleX = Mathf.Clamp(playerAngleX - Input.GetAxis("Mouse Y") * sensitivity / sensitivityAdjustment, -60, 60);
+        playerAngleX = Mathf.Clamp(playerAngleX - Input.GetAxis("Mouse Y") * sensitivity / sensitivityAdjustment, -maxPlayerAngleX, maxPlayerAngleX);
 
         transform.rotation = Quaternion.Euler(0, playerAngleY, 0) * Quaternion.Euler(playerAngleX, 0, 0);
 

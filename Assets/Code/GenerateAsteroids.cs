@@ -25,7 +25,7 @@ public class GenerateAsteroids : MonoBehaviour
     private float minSize = 2f;
     private float maxSize = 100f;
     private static float sizeVariation = 0.8f;
-    private static float asteroidDensity = 0.0005f;
+    private static float asteroidDensity = 0.01f;
 
     // Start is called before the first frame update
     void Start()
@@ -51,6 +51,6 @@ public class GenerateAsteroids : MonoBehaviour
         clone.transform.localScale = size * new Vector3(1 + Random.value * sizeVariation, 1 + Random.value * sizeVariation, 1 + Random.value * sizeVariation);
 
         Rigidbody rb = clone.GetComponent<Rigidbody>();
-        rb.mass = asteroidDensity * 4 / 3 * Mathf.PI * Mathf.Pow(size, 3);
+        rb.mass = asteroidDensity * 4 / 3 * Mathf.PI * Mathf.Pow(size/2, 3);
     }
 }
