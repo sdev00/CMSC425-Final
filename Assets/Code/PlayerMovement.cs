@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public int sensitivity = 100;
-    private float acceleration = 120;
+    private float acceleration = 150;
     private float abilityRecharge = 3;
     private float abilitySpeed = 1500;
     private int sensitivityAdjustment = 20;
@@ -18,7 +18,7 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        Cursor.lockState = CursorLockMode.Locked;
+        //Cursor.lockState = CursorLockMode.Locked;
     }
 
     // Update is called once per frame
