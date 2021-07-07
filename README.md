@@ -1,10 +1,12 @@
-# CMSC425-Final
-A Unity game for CMSC425, by Sahil Dev, Nikos Koutsoheras, and Mariam Adwan.
+# Space Game
+(Title Pending)\
+A Unity game for CMSC425: Game Programming, by Sahil Dev, Nikos Koutsoheras, and Mariam Adwan.
 
-TODO:
+## TODO
 1. Player
     - [ ] make a better model
     - [ ] add in the hook movement we initially wanted (if time permits)
+    - [ ] add money and upgardes (optional)
 
 2. Asteroids
     - [ ] make a better model
@@ -26,7 +28,8 @@ TODO:
     - [ ] allow the user to change things like sensitivity
     - [ ] define a win condition
     - [ ] add a lose condition, health, getting shot by enemies, etc.
-    - [ ] make a UI that tracks and shows the win condition when the player dies or the game is completed
+    - [ ] make a UI that tracks the status of the win/lose conditions during gameplay
+    - [ ] make a UI for when the user wins or loses
 
 5. Other
     - [ ] update the skybox to include stars
