@@ -50,15 +50,12 @@ public class Planet : MonoBehaviour
     public void Update()
     {
         planet.transform.RotateAround(Vector3.zero, axis, Time.deltaTime * rotateSpeed);
-
         player.transform.position = new Vector3(0, 0, 3.5f * planetSize);
-        player.transform.LookAt(Vector3.zero);
-        Debug.Log(player.transform.rotation);
     }
 
     public void Start()
     {
-        Random.seed = 42;
+        Random.seed = 69;
 
         verts = new List<Vector3>();
         tris = new List<Triangle>();
