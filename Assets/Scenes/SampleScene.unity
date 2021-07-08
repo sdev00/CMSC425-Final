@@ -148,7 +148,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 286481471}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 4, z: 0}
+  m_LocalPosition: {x: 0, y: 4, z: -22.04}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1318930335}
@@ -198,10 +198,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c9aae1259e1a3147b25e46dee236713, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  verts: []
-  tris: []
-  planet: {fileID: 0}
-  material: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  material: {fileID: 2100000, guid: 4ce6a3dcd27b96041a7d53ebc377c972, type: 2}
 --- !u!1 &333746581
 GameObject:
   m_ObjectHideFlags: 0
@@ -983,7 +980,7 @@ PrefabInstance:
     - target: {fileID: 2849204206511744662, guid: 04d4aee6d1be2ed469a176ef145ae8b4,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 04d4aee6d1be2ed469a176ef145ae8b4, type: 3}

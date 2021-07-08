@@ -4,28 +4,61 @@ using UnityEngine;
 
 public class Planet : MonoBehaviour
 {
-    public List<Vector3> verts;
-    public List<Triangle> tris;
-    public GameObject planet;
+    private List<Vector3> verts;
+    private List<Triangle> tris;
+    private GameObject planet;
+    private Vector3 planetSize = new Vector3(20, 20, 20);
+    private Color32 ocean = new Color32(0, 80, 220, 0);
+    private Color32 grass = new Color32(0, 220, 0, 0);
+    private Color32 ground = new Color32(180, 140, 20, 0);
+    private int minContinents = 3;
+    private int maxContinents = 7;
+    private float minContinentSize = 0.1f;
+    private float maxContientSize = 0.5f;
     public Material material;
-
-    public Planet(int smoothness)
-    {
-        verts = new List<Vector3>();
-        tris = new List<Triangle>();
-
-        generate(smoothness);
-        getMesh();
-    }
     
     public void Start()
     {
-        Planet planet = new Planet(2);
-        //Instantiate(planet.mesh);
+        Random.seed = 42;
+
+        verts = new List<Vector3>();
+        tris = new List<Triangle>();
+        generate(5);
+        Debug.Log(tris.Count);
+
+        setNeighbors();
+
+        foreach (Triangle t in tris)
+        {
+            t.color = ocean;
+        }
+
+        TriSet land = new TriSet();
+        int numContinents = Random.Range(minContinents, maxContinents);
+
+        for (int i = 0; i < numContinents; i++)
+        {
+            float size = Random.Range(minContinentSize, maxContientSize);
+            TriSet newLand = getTrisInSphere(Random.onUnitSphere, size, tris);
+            land.UnionWith(newLand);
+        }
+
+        foreach (Triangle t in land)
+        {
+            t.color = grass;
+        }
+
+        TriSet sides = Extrude(land, 0.25f);
+        foreach (Triangle t in sides)
+        {
+            //t.color = ground;
+        }
+
+        display();
+        Debug.Log(tris.Count);
     }
 
-
-    public void getMesh()
+    public void display()
     {
         if (planet)
         {
@@ -43,9 +76,6 @@ public class Planet : MonoBehaviour
         Vector3[] normals = new Vector3[3 * tris.Count];
         Color32[] colors = new Color32[3 * tris.Count];
 
-        Color32 brown = new Color32(220, 150, 70, 255);
-        Color32 green = new Color32(20, 255, 30, 255);
-
         for (int i = 0; i < tris.Count; i++)
         {
             Triangle tri = tris[i];
@@ -58,15 +88,13 @@ public class Planet : MonoBehaviour
             vertices[3 * i + 1] = verts[tri.vertices[1]];
             vertices[3 * i + 2] = verts[tri.vertices[2]];
 
-            Color32 color = Color32.Lerp(brown, green, Random.Range(0f, 1f));
+            colors[i * 3 + 0] = tri.color;
+            colors[i * 3 + 1] = tri.color;
+            colors[i * 3 + 2] = tri.color;
 
-            colors[i * 3 + 0] = color;
-            colors[i * 3 + 1] = color;
-            colors[i * 3 + 2] = color;
-
-            normals[i * 3 + 0] = verts[tri.vertices[0]];
-            normals[i * 3 + 1] = verts[tri.vertices[1]];
-            normals[i * 3 + 2] = verts[tri.vertices[2]];
+            normals[i * 3] = Vector3.Normalize(verts[tri.vertices[0]]);
+            normals[i * 3 + 1] = Vector3.Normalize(verts[tri.vertices[1]]);
+            normals[i * 3 + 2] = Vector3.Normalize(verts[tri.vertices[2]]);
         }
 
         surface.vertices = vertices;
@@ -74,6 +102,8 @@ public class Planet : MonoBehaviour
         surface.colors32 = colors;
         surface.SetTriangles(triangles, 0);
         filter.mesh = surface;
+
+        planet.transform.localScale = planetSize;
     }
 
     // generate an icosahedron with a given depth of triangle subdivisions
@@ -83,10 +113,10 @@ public class Planet : MonoBehaviour
 
         // midpoints between two vertices
         Dictionary<(int, int), int> mids = new Dictionary<(int, int), int>();
-        generateIcosahedronAux(depth - 1, mids);
+        generateAux(depth - 1, mids);
     }
 
-    public void generateIcosahedronAux(int depth, Dictionary<(int, int), int> mids)
+    public void generateAux(int depth, Dictionary<(int, int), int> mids)
     {
         if (depth < 1)
         {
@@ -101,10 +131,18 @@ public class Planet : MonoBehaviour
             int v2 = tri.vertices[1];
             int v3 = tri.vertices[2];
 
+            int m1 = midpointIndex(mids, v1, v2);
+            int m2 = midpointIndex(mids, v2, v3);
+            int m3 = midpointIndex(mids, v3, v1);
 
+            newTris.Add(new Triangle(v1, m1, m3));
+            newTris.Add(new Triangle(v2, m2, m1));
+            newTris.Add(new Triangle(v3, m3, m2));
+            newTris.Add(new Triangle(m1, m2, m3));
         }
 
-        generateIcosahedronAux(depth - 1, mids);
+        tris = newTris;
+        generateAux(depth - 1, mids);
     }
 
     // create a basic icosahedron with radius 1
@@ -156,12 +194,134 @@ public class Planet : MonoBehaviour
         int index;
         if (!mids.TryGetValue((v1, v2), out index))
         {
-            Vector3 midpoint = Vector3.Normalize(verts[v1] + verts[v2]) / 2;
+            Vector3 midpoint = Vector3.Normalize((verts[v1] + verts[v2]) / 2);
             index = verts.Count;
             verts.Add(midpoint);
             mids.Add((v1, v2), index);
         }
 
         return index;
+    }
+
+    public TriSet getTrisInSphere(Vector3 center, float radius, IEnumerable<Triangle> triangles)
+    {
+        TriSet ts = new TriSet();
+        foreach (Triangle t in triangles)
+        {
+            foreach (int vIndex in t.vertices)
+            {
+                float distanceToSphere = Vector3.Distance(center, verts[vIndex]);
+                if (distanceToSphere <= radius) {
+                    ts.Add(t);
+                    break;
+                }
+            }
+        }
+
+        return ts;
+    }
+
+    public TriSet Extrude(TriSet triangles, float dist)
+    {
+        TriSet stitched = stitchTris(triangles);
+        List<int> vertices = triangles.getUniqueVerts();
+        
+        foreach (int v in vertices)
+        {
+            Vector3 vertex = verts[v];
+            //verts[v] = Vector3.Normalize(vertex) * (vertex.magnitude + dist);
+        }
+
+        return stitched;
+    }
+
+    public TriSet Inset(TriSet triangles, float interp)
+    {
+        TriSet stitched = stitchTris(triangles);
+        List<int> vertices = triangles.getUniqueVerts();
+
+        Vector3 center = Vector3.zero;
+        foreach (int v in vertices)
+        {
+            center += verts[v];
+        }
+        center /= vertices.Count;
+
+        foreach (int v in vertices)
+        {
+            Vector3 vertex = verts[v];
+            float dist = vertex.magnitude;
+            vertex = Vector3.Lerp(vertex, center, interp);
+            vertex = Vector3.Normalize(vertex) * dist;
+            verts[v] = vertex;
+        }
+        return stitched;
+    }
+
+    public TriSet stitchTris(TriSet triangles)
+    {
+        TriSet stitched = new TriSet();
+        EdgeSet edgeSet = triangles.getEdgeSet();
+        List<int> initialVerts = edgeSet.getUniqueVerts();
+        List<int> newVerts = cloneVerts(initialVerts);
+        edgeSet.split(initialVerts, newVerts);
+
+        foreach (Edge e in edgeSet)
+        {
+            Triangle s1 = new Triangle(e.outerVerts[0], e.outerVerts[1], e.innerVerts[0]);
+            Triangle s2 = new Triangle(e.outerVerts[1], e.innerVerts[1], e.innerVerts[0]);
+
+            e.inner.updateNeighbor(e.outer, s2);
+            e.outer.updateNeighbor(e.inner, s1);
+
+            e.inner.color = new Color32(255, 255, 255, 0);
+            e.outer.color = new Color32(255, 0, 0, 0);
+
+            tris.Add(s1);
+            tris.Add(s2);
+
+            stitched.Add(s1);
+            stitched.Add(s2);
+        }
+
+        foreach (Triangle t in triangles)
+        {
+            for (int i = 0; i < t.vertices.Length; i++)
+            {
+                int v = t.vertices[i];
+                if (initialVerts.Contains(v))
+                {
+                    int vIndex = initialVerts.IndexOf(v);
+                    t.vertices[i] = newVerts[vIndex];
+                }
+            }
+        }
+        return stitched;
+    }
+
+    public void setNeighbors()
+    {
+        for (int i = 0; i < tris.Count; i++)
+        {
+            for (int j = i + 1; j < tris.Count; j++)
+            {
+                if (tris[i].isNeighbor(tris[j])) {
+                    tris[i].neighbors.Add(tris[j]);
+                    tris[j].neighbors.Add(tris[i]);
+                }
+            }
+        }
+    }
+
+    public List<int> cloneVerts(List<int> vertices)
+    {
+        List<int> clone = new List<int>();
+        foreach (int v in vertices)
+        {
+            Vector3 vClone = verts[v];
+            clone.Add(verts.Count);
+            verts.Add(vClone);
+        }
+        return clone;
     }
 }
