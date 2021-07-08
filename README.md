@@ -22,7 +22,7 @@ A Unity game for CMSC425: Game Programming, by Sahil Dev, Nikos Koutsoheras, and
     - [ ] figure out and implement what happens when a ship is destroyed
 
 4. UI and Win Condition
-    - [ ] make a UI for the starting screen
+    - [x] make a UI for the starting screen
     - [ ] allow the user to change things like difficulty
     - [ ] make a UI open and pause the game when pressing escape
     - [ ] allow the user to change things like sensitivity
