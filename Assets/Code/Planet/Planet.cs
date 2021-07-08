@@ -15,138 +15,106 @@ public class Planet : MonoBehaviour
     private List<Triangle> tris;
     private GameObject planet;
     private float planetSize = 40f;
-
-    private Color32 landFlatColor = new Color32(0, 180, 0, 0);
-    private Color32 hillFlatColor = new Color32(0, 220, 0, 0);
-    private Color32 mountainFlatColor = new Color32(240, 230, 220, 0);
-
-    private Color32 landSideColor = new Color32(180, 160, 20, 0);
-    private Color32 hillSideColor = new Color32(180, 120, 20, 0);
-    private Color32 mountainSideColor = new Color32(140, 70, 20, 0);
-    
-    private Color32 oceanColor = new Color32(0, 80, 220, 0);
-
-    private int minContinents = 4;
-    private int maxContinents = 10;
-    private float minContinentSize = 0.1f;
-    private float maxContientSize = 0.85f;
-    private float minContinentHeight = 0.01f;
-    private float maxContinentHeight = 0.07f;
-
-    private int minHills = 4;
-    private int maxHills = 6;
-    private float minHillSize = 0.1f;
-    private float maxHillSize = 0.8f;
-    private float minHillHeight = 0.01f;
-    private float maxHillHeight = 0.07f;
-
-    private int minMountains = 5;
-    private int maxMountains = 5;
-    private float minMountainSize = 0.4f;
-    private float maxMountainSize = 0.5f;
-    private float minMountainHeight = 0.03f;
-    private float maxMountainHeight = 0.08f;
-
-    public void Update()
-    {
-        planet.transform.RotateAround(Vector3.zero, axis, Time.deltaTime * rotateSpeed);
-        transform.position = new Vector3(0, 0, 3f * planetSize);
-        transform.LookAt(planet.transform.position);
-    }
+    private int smoothness = 4;
 
     public void Start()
     {
-        Random.seed = 69;
-
+        Random.InitState(69);
         verts = new List<Vector3>();
         tris = new List<Triangle>();
-        generate(5);
 
-        setNeighbors();
+        StartCoroutine("DisplayPlanetOnGameEnd");
+    }
 
-        foreach (Triangle t in tris)
-        {
-            t.color = oceanColor;
-        }
+    IEnumerator DisplayPlanetOnGameEnd()
+    {
+        while (!player.GetComponent<PlayerMovement>().gameComplete)
+            yield return null;
 
-
-        // land generation
-
-        TriSet land = new TriSet();
-        int numContinents = Random.Range(minContinents, maxContinents);
-
-        for (int i = 0; i < numContinents; i++)
-        {
-            float size = Random.Range(minContinentSize, maxContientSize);
-            TriSet newLand = getTrisInSphere(Random.onUnitSphere, size, tris);
-            land.UnionWith(newLand);
-        }
-
-        foreach (Triangle t in land)
-        {
-            t.color = landFlatColor;
-        }
-
-        TriSet sides = Extrude(land, Random.Range(minContinentHeight, maxContinentHeight));
-        foreach (Triangle t in sides)
-        {
-            t.color = landSideColor;
-        }
-
-
-        // hill generation
-
-        TriSet hills = new TriSet();
-        int numHills = Random.Range(minHills, maxHills);
-
-        for (int i = 0; i < numHills; i++)
-        {
-            float size = Random.Range(minHillSize, maxHillSize);
-            TriSet newHill = getTrisInSphere(Random.onUnitSphere, size, land);
-            hills.UnionWith(newHill);
-        }
-
-        foreach (Triangle t in hills)
-        {
-            t.color = landFlatColor;
-        }
-
-        sides = Extrude(hills, Random.Range(minHillHeight, maxHillHeight));
-
-        foreach (Triangle side in sides)
-        {
-            side.color = hillSideColor;
-        }
-
-        // mountain generation
-
-        TriSet mountains = new TriSet();
-        int numMountains = Random.Range(minMountains, maxMountains);
-
-        for (int i = 0; i < numMountains; i++)
-        {
-            float size = Random.Range(minMountainSize, maxMountainSize);
-            TriSet newMountain = getTrisInSphere(Random.onUnitSphere, size, hills);
-            mountains.UnionWith(newMountain);
-        }
-
-        foreach (Triangle t in mountains)
-        {
-            t.color = mountainFlatColor;
-        }
-
-        sides = Extrude(mountains, Random.Range(minMountainHeight, maxMountainHeight));
-
-        foreach (Triangle side in sides)
-        {
-            side.color = mountainSideColor;
-        }
-
+        generateEndPlanet();
 
         display();
         planet.transform.position = Vector3.zero;
         axis = Random.onUnitSphere;
         rotateSpeed = Random.Range(minRotateSpeed, maxRotateSpeed);
+
+        while (true)
+        {
+            planet.transform.RotateAround(Vector3.zero, axis, Time.deltaTime * rotateSpeed);
+            transform.position = new Vector3(0, 0, 3f * planetSize);
+            transform.LookAt(planet.transform.position);
+            yield return null;
+        }
+    }
+
+    public void generateEndPlanet()
+    {
+        generate(smoothness);
+        setNeighbors();
+
+        TerrainLayer mountainLayer =
+            new TerrainLayer(4, 7,
+                             0.4f, 0.5f,
+                             0.03f, 0.08f,
+                             new Color32(240, 230, 220, 0), new Color32(140, 70, 20, 0),
+                             null);
+
+        TerrainLayer hillLayer =
+            new TerrainLayer(4, 8,
+                             0.1f, 0.7f,
+                             0.01f, 0.07f,
+                             new Color32(0, 220, 0, 0), new Color32(180, 120, 20, 0),
+                             new TerrainLayer[] { mountainLayer });
+
+        TerrainLayer continentLayer =
+            new TerrainLayer(4, 10,
+                             0.1f, 0.85f,
+                             0.01f, 0.07f,
+                             new Color32(0, 180, 0, 0), new Color32(180, 160, 20, 0),
+                             new TerrainLayer[] { hillLayer });
+
+        TerrainLayer oceanLayer =
+            new TerrainLayer(1, 1,
+                             2f, 2f,
+                             0f, 0f,
+                             new Color32(0, 80, 220, 0), new Color32(0, 80, 220, 0),
+                             new TerrainLayer[] { continentLayer });
+
+        addTerrain(new TerrainLayer[] { oceanLayer }, tris);
+    }
+
+    public void addTerrain(TerrainLayer[] layers, IEnumerable<Triangle> source)
+    {
+        if (layers == null)
+        {
+            return;
+        }
+
+        foreach (TerrainLayer terrainLayer in layers)
+        {
+            TriSet newTerrain = new TriSet();
+            int instanceCount = Random.Range(terrainLayer.minInstances, terrainLayer.maxInstances);
+
+            for (int i = 0; i < instanceCount; i++)
+            {
+                float size = Random.Range(terrainLayer.minSize, terrainLayer.maxSize);
+                TriSet newTerrainInstance = getTrisInSphere(Random.onUnitSphere, size, source);
+                newTerrain.UnionWith(newTerrainInstance);
+            }
+
+            foreach (Triangle t in newTerrain)
+            {
+                t.color = terrainLayer.topColor;
+            }
+
+            TriSet sides = Extrude(newTerrain, Random.Range(terrainLayer.minHeight, terrainLayer.maxHeight));
+            foreach (Triangle t in sides)
+            {
+                t.color = terrainLayer.sideColor;
+            }
+
+            addTerrain(terrainLayer.childLayers, newTerrain);
+        }
     }
 
     public void display()
@@ -425,5 +393,31 @@ public class Planet : MonoBehaviour
             verts.Add(vClone);
         }
         return clone;
+    }
+}
+
+public struct TerrainLayer
+{
+    public int minInstances, maxInstances;
+    public float minSize, maxSize;
+    public float minHeight, maxHeight;
+    public Color32 topColor, sideColor;
+    public TerrainLayer[] childLayers;
+
+    public TerrainLayer(int minInstances, int maxInstances,
+                        float minSize, float maxSize,
+                        float minHeight, float maxHeight, 
+                        Color32 topColor, Color32 sideColor, 
+                        TerrainLayer[] childLayers)
+    {
+        this.minInstances = minInstances;
+        this.maxInstances = maxInstances;
+        this.minSize = minSize;
+        this.maxSize = maxSize;
+        this.minHeight = minHeight;
+        this.maxHeight = maxHeight;
+        this.topColor = topColor;
+        this.sideColor = sideColor;
+        this.childLayers = childLayers;
     }
 }

@@ -5,13 +5,13 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public int sensitivity = 100;
+    public bool gameComplete = true;
     private float acceleration = 150;
     private float abilitySpeed = 1500;
     private int sensitivityAdjustment = 20;
     private float playerAngleY = 0;
     private float playerAngleX = 0;
     private float maxPlayerAngleX = 90;
-    private bool gameComplete = true;
 
     private Rigidbody rb;
 
