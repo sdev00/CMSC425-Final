@@ -4,29 +4,25 @@ using UnityEngine;
 
 public class Triangle
 {
-    public int[] vertices;
+    public List<int> verts;
     public Color32 color;
     public List<Triangle> neighbors;
 
     // store vertices as a 
     public Triangle(int v1, int v2, int v3)
     {
-        vertices = new int[3] { v1, v2, v3 };
-        color = new Color32(255, 0, 255, 255);
+        verts = new List<int> { v1, v2, v3 };
         neighbors = new List<Triangle>();
     }
 
     public bool isNeighbor(Triangle t)
     {
         int vCount = 0;
-        for (int i = 0; i < vertices.Length; i++)
+        foreach (int v in verts)
         {
-            for (int j = 0; j < t.vertices.Length; j++)
+            if (t.verts.Contains(v))
             {
-                if (vertices[i] == t.vertices[j])
-                {
-                    vCount++;
-                }
+                vCount++;
             }
         }
 

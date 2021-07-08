@@ -4,34 +4,75 @@ using UnityEngine;
 
 public class Planet : MonoBehaviour
 {
+    public Material material;
+    public GameObject player;
+    private Vector3 axis;
+    private float rotateSpeed;
+    private float minRotateSpeed = 30;
+    private float maxRotateSpeed = 90;
+
     private List<Vector3> verts;
     private List<Triangle> tris;
     private GameObject planet;
-    private Vector3 planetSize = new Vector3(20, 20, 20);
-    private Color32 ocean = new Color32(0, 80, 220, 0);
-    private Color32 grass = new Color32(0, 220, 0, 0);
-    private Color32 ground = new Color32(180, 140, 20, 0);
-    private int minContinents = 3;
-    private int maxContinents = 7;
-    private float minContinentSize = 0.1f;
-    private float maxContientSize = 0.5f;
-    public Material material;
+    private float planetSize = 40f;
+
+    private Color32 landFlatColor = new Color32(0, 180, 0, 0);
+    private Color32 hillFlatColor = new Color32(0, 220, 0, 0);
+    private Color32 mountainFlatColor = new Color32(240, 230, 220, 0);
+
+    private Color32 landSideColor = new Color32(180, 160, 20, 0);
+    private Color32 hillSideColor = new Color32(180, 120, 20, 0);
+    private Color32 mountainSideColor = new Color32(140, 70, 20, 0);
     
+    private Color32 oceanColor = new Color32(0, 80, 220, 0);
+
+    private int minContinents = 4;
+    private int maxContinents = 10;
+    private float minContinentSize = 0.1f;
+    private float maxContientSize = 0.85f;
+    private float minContinentHeight = 0.01f;
+    private float maxContinentHeight = 0.07f;
+
+    private int minHills = 4;
+    private int maxHills = 6;
+    private float minHillSize = 0.1f;
+    private float maxHillSize = 0.8f;
+    private float minHillHeight = 0.01f;
+    private float maxHillHeight = 0.07f;
+
+    private int minMountains = 5;
+    private int maxMountains = 5;
+    private float minMountainSize = 0.4f;
+    private float maxMountainSize = 0.5f;
+    private float minMountainHeight = 0.03f;
+    private float maxMountainHeight = 0.08f;
+
+    public void Update()
+    {
+        planet.transform.RotateAround(Vector3.zero, axis, Time.deltaTime * rotateSpeed);
+
+        player.transform.position = new Vector3(0, 0, 3.5f * planetSize);
+        player.transform.LookAt(Vector3.zero);
+        Debug.Log(player.transform.rotation);
+    }
+
     public void Start()
     {
         Random.seed = 42;
 
         verts = new List<Vector3>();
         tris = new List<Triangle>();
-        generate(3);
-        Debug.Log(tris.Count);
+        generate(5);
 
         setNeighbors();
 
         foreach (Triangle t in tris)
         {
-            t.color = ocean;
+            t.color = oceanColor;
         }
+
+
+        // land generation
 
         TriSet land = new TriSet();
         int numContinents = Random.Range(minContinents, maxContinents);
@@ -45,17 +86,69 @@ public class Planet : MonoBehaviour
 
         foreach (Triangle t in land)
         {
-            t.color = grass;
+            t.color = landFlatColor;
         }
 
-        TriSet sides = Extrude(land, 0.01f);
+        TriSet sides = Extrude(land, Random.Range(minContinentHeight, maxContinentHeight));
         foreach (Triangle t in sides)
         {
-            t.color = ground;
+            t.color = landSideColor;
         }
 
+
+        // hill generation
+
+        TriSet hills = new TriSet();
+        int numHills = Random.Range(minHills, maxHills);
+
+        for (int i = 0; i < numHills; i++)
+        {
+            float size = Random.Range(minHillSize, maxHillSize);
+            TriSet newHill = getTrisInSphere(Random.onUnitSphere, size, land);
+            hills.UnionWith(newHill);
+        }
+
+        foreach (Triangle t in hills)
+        {
+            t.color = landFlatColor;
+        }
+
+        sides = Extrude(hills, Random.Range(minHillHeight, maxHillHeight));
+
+        foreach (Triangle side in sides)
+        {
+            side.color = hillSideColor;
+        }
+
+        // mountain generation
+
+        TriSet mountains = new TriSet();
+        int numMountains = Random.Range(minMountains, maxMountains);
+
+        for (int i = 0; i < numMountains; i++)
+        {
+            float size = Random.Range(minMountainSize, maxMountainSize);
+            TriSet newMountain = getTrisInSphere(Random.onUnitSphere, size, hills);
+            mountains.UnionWith(newMountain);
+        }
+
+        foreach (Triangle t in mountains)
+        {
+            t.color = mountainFlatColor;
+        }
+
+        sides = Extrude(mountains, Random.Range(minMountainHeight, maxMountainHeight));
+
+        foreach (Triangle side in sides)
+        {
+            side.color = mountainSideColor;
+        }
+
+
         display();
-        Debug.Log(tris.Count);
+        planet.transform.position = Vector3.zero;
+        axis = Random.onUnitSphere;
+        rotateSpeed = Random.Range(minRotateSpeed, maxRotateSpeed);
     }
 
     public void display()
@@ -66,7 +159,6 @@ public class Planet : MonoBehaviour
         }
 
         planet = new GameObject("Planet");
-        MeshFilter filter = planet.AddComponent<MeshFilter>();
         MeshRenderer r = planet.AddComponent<MeshRenderer>();
         r.material = material;
         Mesh surface = new Mesh();
@@ -84,26 +176,28 @@ public class Planet : MonoBehaviour
             triangles[3 * i + 1] = 3 * i + 1;
             triangles[3 * i + 2] = 3 * i + 2;
 
-            vertices[3 * i] = verts[tri.vertices[0]];
-            vertices[3 * i + 1] = verts[tri.vertices[1]];
-            vertices[3 * i + 2] = verts[tri.vertices[2]];
+            vertices[3 * i] = verts[tri.verts[0]];
+            vertices[3 * i + 1] = verts[tri.verts[1]];
+            vertices[3 * i + 2] = verts[tri.verts[2]];
 
             colors[i * 3 + 0] = tri.color;
             colors[i * 3 + 1] = tri.color;
             colors[i * 3 + 2] = tri.color;
 
-            normals[i * 3] = Vector3.Normalize(verts[tri.vertices[0]]);
-            normals[i * 3 + 1] = Vector3.Normalize(verts[tri.vertices[1]]);
-            normals[i * 3 + 2] = Vector3.Normalize(verts[tri.vertices[2]]);
+            normals[i * 3] = Vector3.Normalize(verts[tri.verts[0]]);
+            normals[i * 3 + 1] = Vector3.Normalize(verts[tri.verts[1]]);
+            normals[i * 3 + 2] = Vector3.Normalize(verts[tri.verts[2]]);
         }
 
         surface.vertices = vertices;
         surface.normals = normals;
         surface.colors32 = colors;
         surface.SetTriangles(triangles, 0);
+
+        MeshFilter filter = planet.AddComponent<MeshFilter>();
         filter.mesh = surface;
 
-        planet.transform.localScale = planetSize;
+        planet.transform.localScale = new Vector3(planetSize, planetSize, planetSize);
     }
 
     // generate an icosahedron with a given depth of triangle subdivisions
@@ -127,9 +221,9 @@ public class Planet : MonoBehaviour
         for (int i = 0; i < tris.Count; i++)
         {
             Triangle tri = tris[i];
-            int v1 = tri.vertices[0];
-            int v2 = tri.vertices[1];
-            int v3 = tri.vertices[2];
+            int v1 = tri.verts[0];
+            int v2 = tri.verts[1];
+            int v3 = tri.verts[2];
 
             int m1 = midpointIndex(mids, v1, v2);
             int m2 = midpointIndex(mids, v2, v3);
@@ -191,6 +285,12 @@ public class Planet : MonoBehaviour
 
     public int midpointIndex(Dictionary<(int, int), int> mids, int v1, int v2)
     {
+        if (v1 < v2)
+        {
+            v1 = v1 + v2;
+            v2 = v1 - v2;
+            v1 = v1 - v2;
+        }
         int index;
         if (!mids.TryGetValue((v1, v2), out index))
         {
@@ -208,10 +308,11 @@ public class Planet : MonoBehaviour
         TriSet ts = new TriSet();
         foreach (Triangle t in triangles)
         {
-            foreach (int vIndex in t.vertices)
+            foreach (int vIndex in t.verts)
             {
                 float distanceToSphere = Vector3.Distance(center, verts[vIndex]);
-                if (distanceToSphere <= radius) {
+                if (distanceToSphere <= radius)
+                {
                     ts.Add(t);
                     break;
                 }
@@ -225,11 +326,11 @@ public class Planet : MonoBehaviour
     {
         TriSet stitched = stitchTris(triangles);
         List<int> vertices = triangles.getUniqueVerts();
-        
+
         foreach (int v in vertices)
         {
             Vector3 vertex = verts[v];
-            verts[v] = Vector3.Normalize(vertex) * (vertex.magnitude + dist);
+            verts[v] = vertex.normalized * (vertex.magnitude + dist);
         }
 
         return stitched;
@@ -274,9 +375,6 @@ public class Planet : MonoBehaviour
             e.inner.updateNeighbor(e.outer, s2);
             e.outer.updateNeighbor(e.inner, s1);
 
-            e.inner.color = new Color32(255, 255, 255, 0);
-            e.outer.color = new Color32(255, 0, 0, 0);
-
             tris.Add(s1);
             tris.Add(s2);
 
@@ -286,15 +384,20 @@ public class Planet : MonoBehaviour
 
         foreach (Triangle t in triangles)
         {
-            for (int i = 0; i < t.vertices.Length; i++)
+            for (int i = 0; i < t.verts.Count; i++)
             {
-                int v = t.vertices[i];
+                int v = t.verts[i];
                 if (initialVerts.Contains(v))
                 {
                     int vIndex = initialVerts.IndexOf(v);
-                    t.vertices[i] = newVerts[vIndex];
+                    t.verts[i] = newVerts[vIndex];
                 }
             }
+        }
+
+        foreach (Triangle t in stitched)
+        {
+            t.color = new Color32(150, 0, 0, 0);
         }
         return stitched;
     }
@@ -305,7 +408,8 @@ public class Planet : MonoBehaviour
         {
             for (int j = i + 1; j < tris.Count; j++)
             {
-                if (tris[i].isNeighbor(tris[j])) {
+                if (tris[i].isNeighbor(tris[j]))
+                {
                     tris[i].neighbors.Add(tris[j]);
                     tris[j].neighbors.Add(tris[i]);
                 }

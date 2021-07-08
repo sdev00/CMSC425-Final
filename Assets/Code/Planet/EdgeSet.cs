@@ -8,9 +8,10 @@ public class EdgeSet : HashSet<Edge>
     {
         foreach (Edge e in this)
         {
-            // might need to change innerVerts back to outerVerts (second instance)
-            e.innerVerts[0] = newVerts[oldVerts.IndexOf(e.innerVerts[0])];
-            e.innerVerts[1] = newVerts[oldVerts.IndexOf(e.innerVerts[1])];
+            for (int i = 0; i < 2; i++)
+            {
+                e.innerVerts[i] = newVerts[oldVerts.IndexOf(e.outerVerts[i])];
+            }
         }
     }
 

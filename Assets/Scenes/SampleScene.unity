@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 286481472}
   - component: {fileID: 286481473}
   - component: {fileID: 286481474}
-  - component: {fileID: 286481476}
+  - component: {fileID: 286481475}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -186,7 +186,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &286481476
+--- !u!114 &286481475
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -199,6 +199,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: 4ce6a3dcd27b96041a7d53ebc377c972, type: 2}
+  player: {fileID: 286481471}
 --- !u!1 &333746581
 GameObject:
   m_ObjectHideFlags: 0

@@ -13,20 +13,18 @@ public class Edge
     {
         inner = tInner;
         outer = tOuter;
-        innerVerts = new List<int>();
+        innerVerts = new List<int>(2);
+        outerVerts = new List<int>(2);
 
-        for (int i = 0; i < inner.vertices.Length; i++)
+        foreach (int v in inner.verts)
         {
-            for (int j = 0; j < outer.vertices.Length; j++)
+            if (outer.verts.Contains(v))
             {
-                if (inner.vertices[i] == outer.vertices[j])
-                {
-                    innerVerts.Add(inner.vertices[i]);
-                }
+                innerVerts.Add(v);
             }
         }
 
-        if (innerVerts[0] == inner.vertices[0] && innerVerts[1] == inner.vertices[2])
+        if (innerVerts[0] == inner.verts[0] && innerVerts[1] == inner.verts[2])
         {
             int tmp = innerVerts[0];
             innerVerts[0] = innerVerts[1];
