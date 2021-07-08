@@ -94,7 +94,7 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity += Time.deltaTime * acceleration * transform.up;
             appliedNewThrust = true;
         }
-        if (Input.GetKey(KeyCode.Space))
+        if (Input.GetKey(KeyCode.LeftControl))
         {
             rb.velocity -= Time.deltaTime * acceleration * transform.up;
             appliedNewThrust = true;
