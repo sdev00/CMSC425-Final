@@ -50,7 +50,8 @@ public class Planet : MonoBehaviour
     public void Update()
     {
         planet.transform.RotateAround(Vector3.zero, axis, Time.deltaTime * rotateSpeed);
-        player.transform.position = new Vector3(0, 0, 3.5f * planetSize);
+        transform.position = new Vector3(0, 0, 3f * planetSize);
+        transform.LookAt(planet.transform.position);
     }
 
     public void Start()

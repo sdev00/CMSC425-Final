@@ -6,12 +6,12 @@ public class PlayerMovement : MonoBehaviour
 {
     public int sensitivity = 100;
     private float acceleration = 150;
-    private float abilityRecharge = 3;
     private float abilitySpeed = 1500;
     private int sensitivityAdjustment = 20;
     private float playerAngleY = 0;
     private float playerAngleX = 0;
     private float maxPlayerAngleX = 90;
+    private bool gameComplete = true;
 
     private Rigidbody rb;
 
@@ -36,20 +36,23 @@ public class PlayerMovement : MonoBehaviour
             #endif
         }
 
-        playerAngleY += Input.GetAxis("Mouse X") * sensitivity / sensitivityAdjustment;
-        playerAngleX = Mathf.Clamp(playerAngleX - Input.GetAxis("Mouse Y") * sensitivity / sensitivityAdjustment, -maxPlayerAngleX, maxPlayerAngleX);
-
-        transform.rotation = Quaternion.Euler(0, playerAngleY, 0) * Quaternion.Euler(playerAngleX, 0, 0);
-
-
-        if (Input.GetKey(KeyCode.W))
+        if (!gameComplete)
         {
-            rb.velocity += Time.deltaTime * acceleration * transform.forward;
-        }
+            playerAngleY += Input.GetAxis("Mouse X") * sensitivity / sensitivityAdjustment;
+            playerAngleX = Mathf.Clamp(playerAngleX - Input.GetAxis("Mouse Y") * sensitivity / sensitivityAdjustment, -maxPlayerAngleX, maxPlayerAngleX);
 
-        if (Input.GetKey(KeyCode.Space))
-        {
-            rb.velocity = abilitySpeed * transform.forward;
+            transform.rotation = Quaternion.Euler(0, playerAngleY, 0) * Quaternion.Euler(playerAngleX, 0, 0);
+
+
+            if (Input.GetKey(KeyCode.W))
+            {
+                rb.velocity += Time.deltaTime * acceleration * transform.forward;
+            }
+
+            if (Input.GetKey(KeyCode.Space))
+            {
+                rb.velocity = abilitySpeed * transform.forward;
+            }
         }
     }
 }
