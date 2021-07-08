@@ -23,7 +23,7 @@ public class Planet : MonoBehaviour
 
         verts = new List<Vector3>();
         tris = new List<Triangle>();
-        generate(5);
+        generate(3);
         Debug.Log(tris.Count);
 
         setNeighbors();
@@ -48,10 +48,10 @@ public class Planet : MonoBehaviour
             t.color = grass;
         }
 
-        TriSet sides = Extrude(land, 0.25f);
+        TriSet sides = Extrude(land, 0.01f);
         foreach (Triangle t in sides)
         {
-            //t.color = ground;
+            t.color = ground;
         }
 
         display();
@@ -229,7 +229,7 @@ public class Planet : MonoBehaviour
         foreach (int v in vertices)
         {
             Vector3 vertex = verts[v];
-            //verts[v] = Vector3.Normalize(vertex) * (vertex.magnitude + dist);
+            verts[v] = Vector3.Normalize(vertex) * (vertex.magnitude + dist);
         }
 
         return stitched;
