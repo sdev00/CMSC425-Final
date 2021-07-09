@@ -8,11 +8,17 @@ public class PlayerHandling : MonoBehaviour
     public GameObject camera, cameraChild;
     public int sensitivity = 100;
     public bool gameComplete = false;
+    public int health = 5;
+    public ResourceData resources = new ResourceData(0, 0, 0, 0, 0, 0);
+    public AudioClip collisionSound;
     AudioSource audioSource;
 
+    private float gameDuration = 300;
     private float acceleration = 50;
     private float rotationSpeed = 50;
     private float abilityRecharge = 3;
+    private float invincibleUntil = 0;
+    private float invincibilityPeriod = 2;
 
     private float abilitySpeed = 1500;
     private int sensitivityAdjustment = 20;
@@ -91,12 +97,12 @@ public class PlayerHandling : MonoBehaviour
             rb.velocity -= Time.deltaTime * acceleration * transform.forward;
             appliedNewThrust = true;
         }
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (Input.GetKey(KeyCode.Space))
         {
             rb.velocity += Time.deltaTime * acceleration * transform.up;
             appliedNewThrust = true;
         }
-        if (Input.GetKey(KeyCode.Space))
+        if (Input.GetKey(KeyCode.LeftShift))
         {
             rb.velocity -= Time.deltaTime * acceleration * transform.up;
             appliedNewThrust = true;
@@ -131,5 +137,16 @@ public class PlayerHandling : MonoBehaviour
         
         cameraChild.transform.position = Vector3.MoveTowards(cameraChild.transform.position, camera.transform.position, Input.GetAxis("Mouse ScrollWheel") * scrollStep);
         camera.transform.rotation = Quaternion.Euler(0, cameraAngleY, 0) * Quaternion.Euler(cameraAngleX, 0, 0);
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log(collision.relativeVelocity.magnitude);
+        if (collision.relativeVelocity.magnitude > 50 && Time.time > invincibleUntil)
+        {
+            audioSource.PlayOneShot(collisionSound);
+            health -= 1;
+            invincibleUntil = Time.time + invincibilityPeriod;
+        }
     }
 }

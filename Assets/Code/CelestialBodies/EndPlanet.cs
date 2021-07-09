@@ -11,18 +11,13 @@ public class EndPlanet : MonoBehaviour
     private float minRotateSpeed = 45;
     private float maxRotateSpeed = 75;
 
-    private Composition ocean = new Composition(2, 0, 0, 1, 0, 0);
-    private int oceanResources = 200;
-    private Composition continent = new Composition(2, 6, 2, 4, 1, 0);
-    private int continentResources = 100;
-    private Composition hill = new Composition(2, 6, 2, 2, 1, 0);
-    private int hillResources = 50;
-    private Composition mountain = new Composition(2, 4, 1, 2, 1, 0);
-    private int mountainResources = 25;
-    private Composition beach = new Composition(1, 0, 0, 2, 0, 1);
-    private int beachResources = 75;
-    private Composition desert = new Composition(0, 0, 0, 2, 0, 1);
-    private int desertResources = 75;
+    private ResourceData ocean = new ResourceData(160, 0, 0, 80, 0, 0);
+    private ResourceData continent = new ResourceData(16, 48, 16, 32, 8, 0);
+    private ResourceData hill = new ResourceData(8, 24, 8, 8, 4, 0);
+    private ResourceData mountain = new ResourceData(6, 12, 3, 6, 3, 0);
+    private ResourceData beach = new ResourceData(20, 0, 0, 40, 0, 20);
+    private ResourceData desert = new ResourceData(0, 0, 0, 50, 0, 25);
+    private ResourceData totalResources;
 
     private Color32 healthyOcean = new Color32(0, 60, 200, 0);
     private Color32 unhealthyOcean = new Color32(20, 20, 20, 0);
@@ -55,6 +50,14 @@ public class EndPlanet : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        totalResources = ocean + continent + hill + mountain + beach + desert;
+        Debug.Log(totalResources.getH());
+        Debug.Log(totalResources.getC());
+        Debug.Log(totalResources.getN());
+        Debug.Log(totalResources.getO());
+        Debug.Log(totalResources.getP());
+        Debug.Log(totalResources.getSi());
+
         Random.InitState(69);
         StartCoroutine("DisplayPlanetOnGameEnd");
     }

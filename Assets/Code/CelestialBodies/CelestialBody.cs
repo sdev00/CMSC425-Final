@@ -356,7 +356,7 @@ public struct TerrainLayer
     }
 }
 
-public class Composition
+public class ResourceData
 {
     private int total;
     private int hydrogen;
@@ -366,14 +366,14 @@ public class Composition
     private int phosphorus;
     private int silicon;
 
-    private static float abundanceH = 4f;
-    private static float abundanceC = 4f;
+    private static float abundanceH = 15f;
+    private static float abundanceC = 6f;
     private static float abundanceN = 2f;
-    private static float abundanceO = 3f;
+    private static float abundanceO = 12f;
     private static float abundanceP = 1f;
-    private static float abundanceSi = 1f;
+    private static float abundanceSi = 3f;
 
-    public Composition(int H, int C, int N, int O, int P, int Si)
+    public ResourceData(int H, int C, int N, int O, int P, int Si)
     {
         total = H + C + N + O + P + Si;
         hydrogen = H;
@@ -384,29 +384,33 @@ public class Composition
         silicon = Si;
     }
 
-    public float getH()
+    public int getH()
     {
         return hydrogen;
     }
-    public float getC()
+    public int getC()
     {
         return carbon;
     }
-    public float getN()
+    public int getN()
     {
         return nitrogen;
     }
-    public float getO()
+    public int getO()
     {
         return oxygen;
     }
-    public float getP()
+    public int getP()
     {
         return phosphorus;
     }
-    public float getSi()
+    public int getSi()
     {
         return silicon;
+    }
+    public int getTotal()
+    {
+        return total;
     }
 
     public float getPercentH()
@@ -434,7 +438,7 @@ public class Composition
         return silicon / (float) total;
     }
 
-    public static Composition randomComposition(int total)
+    public static ResourceData randomResourceData(int total)
     {
         float H = Random.value * abundanceH;
         float C = Random.value * abundanceC;
@@ -445,7 +449,13 @@ public class Composition
 
         float tempTotal = H + C + N + O + P + Si;
         float scale = total / tempTotal;
-        return new Composition((int) (H * scale), (int) (C * scale), (int) (N * scale),
+        return new ResourceData((int) (H * scale), (int) (C * scale), (int) (N * scale),
                                (int) (O * scale), (int) (P * scale), (int) (Si * scale));
+    }
+
+    public static ResourceData operator +(ResourceData r1, ResourceData r2)
+    {
+        return new ResourceData(r1.hydrogen + r2.hydrogen, r1.carbon + r2.carbon, r1.nitrogen + r2.nitrogen,
+                                r1.oxygen + r2.oxygen, r1.phosphorus + r2.phosphorus, r1.silicon + r2.silicon);
     }
 }
