@@ -62,7 +62,7 @@ public class EndPlanet : MonoBehaviour
                              new Color32(0, 80, 220, 0), new Color32(0, 80, 220, 0),
                              new TerrainLayer[] { beachLayer, continentLayer });
 
-        planet = new CelestialBody(Vector3.zero, 4, 40f, 0f, new TerrainLayer[] { oceanLayer }).body;
+        planet = new CelestialBody(Vector3.zero, 4, 60f, 0f, new TerrainLayer[] { oceanLayer }).body;
 
         axis = Random.onUnitSphere;
         rotateSpeed = Random.Range(minRotateSpeed, maxRotateSpeed);
