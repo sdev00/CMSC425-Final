@@ -7,16 +7,13 @@ public class PlayerMovement : MonoBehaviour
 {
     public GameObject camera, cameraChild;
     public int sensitivity = 100;
-<<<<<<< HEAD
     public bool gameComplete = false;
-    private float acceleration = 150;
-=======
     AudioSource audioSource;
 
     private float acceleration = 150;
     private float rotation = 30;
     private float abilityRecharge = 3;
->>>>>>> a667e5fcb010f1fa6713e3cf3a049c66e04da719
+
     private float abilitySpeed = 1500;
     private int sensitivityAdjustment = 20;
     private float cameraAngleY = 0;
