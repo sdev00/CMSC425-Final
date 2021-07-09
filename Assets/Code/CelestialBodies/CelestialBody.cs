@@ -2,101 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Planet : MonoBehaviour
+public class CelestialBody
 {
-    public Material material;
-    private Vector3 axis;
-    private float rotateSpeed;
-    private float minRotateSpeed = 30;
-    private float maxRotateSpeed = 90;
+    public static Material material;
+    public GameObject body;
 
     private List<Vector3> verts;
     private List<Triangle> tris;
-    private GameObject body;
 
-    public void Start()
+    public CelestialBody(Vector3 position, int smoothness, float size, float sizeVariation, TerrainLayer[] terrain)
     {
-        Random.InitState(69);
         verts = new List<Vector3>();
         tris = new List<Triangle>();
 
-        StartCoroutine("DisplayPlanetOnGameEnd");
-    }
-
-    IEnumerator DisplayPlanetOnGameEnd()
-    {
-        while (!GetComponent<PlayerMovement>().gameComplete)
-            yield return null;
-
-        generateEndPlanet(4, 40f);
-
-        while (true)
-        {
-            body.transform.RotateAround(Vector3.zero, axis, Time.deltaTime * rotateSpeed);
-            transform.position = new Vector3(0, 0, 120);
-            transform.LookAt(body.transform.position);
-            yield return null;
-        }
-    }
-
-    public void generateAsteroid(int smoothness, Composition composition)
-    {
-
-    }
-
-    public void generateEndPlanet(int smoothness, float size)
-    {
         generate(smoothness);
-        setNeighbors();
-
-        TerrainLayer mountainLayer =
-            new TerrainLayer(5, 8,
-                             0.3f, 0.3f,
-                             0.07f, 0.07f,
-                             new Color32(255, 255, 255, 0), new Color32(140, 70, 20, 0),
-                             null);
-
-        TerrainLayer hillLayer =
-            new TerrainLayer(5, 8,
-                             0.3f, 0.7f,
-                             0.01f, 0.04f,
-                             new Color32(30, 180, 0, 0), new Color32(180, 120, 20, 0),
-                             new TerrainLayer[] { mountainLayer });
-
-        TerrainLayer desertLayer =
-            new TerrainLayer(5, 8,
-                             0.3f, 0.7f,
-                             0f, 0.01f,
-                             new Color32(230, 220, 0, 0), new Color32(230, 220, 0, 0),
-                             null);
-
-        TerrainLayer continentLayer =
-            new TerrainLayer(4, 8,
-                             0.1f, 0.75f,
-                             0.01f, 0.04f,
-                             new Color32(0, 220, 0, 0), new Color32(180, 160, 20, 0),
-                             new TerrainLayer[] { desertLayer, hillLayer });
-
-        TerrainLayer beachLayer =
-            new TerrainLayer(7, 10,
-                             0.2f, 0.3f,
-                             0f, 0.01f,
-                             new Color32(230, 220, 150, 0), new Color32(230, 220, 150, 0),
-                             null);
-
-        TerrainLayer oceanLayer =
-            new TerrainLayer(1, 1,
-                             2f, 2f,
-                             0f, 0f,
-                             new Color32(0, 80, 220, 0), new Color32(0, 80, 220, 0),
-                             new TerrainLayer[] { beachLayer, continentLayer });
-
-        addTerrain(new TerrainLayer[] { oceanLayer }, tris);
-
-        display(size, 0f);
-        body.transform.position = Vector3.zero;
-        axis = Random.onUnitSphere;
-        rotateSpeed = Random.Range(minRotateSpeed, maxRotateSpeed);
+        addTerrain(terrain, tris);
+        display(position, size, sizeVariation);
     }
 
     public void addTerrain(TerrainLayer[] layers, IEnumerable<Triangle> source)
@@ -133,14 +54,9 @@ public class Planet : MonoBehaviour
         }
     }
 
-    public void display(float size, float sizeVariation)
+    public void display(Vector3 position, float size, float sizeVariation)
     {
-        if (body)
-        {
-            Destroy(body);
-        }
-
-        body = new GameObject("Planet");
+        body = new GameObject("Celestial Body");
         MeshRenderer r = body.AddComponent<MeshRenderer>();
         r.material = material;
         Mesh surface = new Mesh();
@@ -179,7 +95,8 @@ public class Planet : MonoBehaviour
         MeshFilter filter = body.AddComponent<MeshFilter>();
         filter.mesh = surface;
 
-        body.transform.localScale = size * 
+        body.transform.position = position;
+        body.transform.localScale = size *
             new Vector3(1 + Random.value * sizeVariation, 1 + Random.value * sizeVariation, 1 + Random.value * sizeVariation); ;
     }
 
@@ -191,6 +108,7 @@ public class Planet : MonoBehaviour
         // midpoints between two vertices
         Dictionary<(int, int), int> mids = new Dictionary<(int, int), int>();
         generateAux(depth - 1, mids);
+        setNeighbors();
     }
 
     public void generateAux(int depth, Dictionary<(int, int), int> mids)
@@ -423,8 +341,8 @@ public struct TerrainLayer
 
     public TerrainLayer(int minInstances, int maxInstances,
                         float minSize, float maxSize,
-                        float minHeight, float maxHeight, 
-                        Color32 topColor, Color32 sideColor, 
+                        float minHeight, float maxHeight,
+                        Color32 topColor, Color32 sideColor,
                         TerrainLayer[] childLayers)
     {
         this.minInstances = minInstances;
