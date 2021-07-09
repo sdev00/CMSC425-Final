@@ -8,6 +8,7 @@ public class PlayerMovement : MonoBehaviour
     public GameObject camera, cameraChild;
     public int sensitivity = 100;
     AudioSource audioSource;
+    public GameObject progradeMarker, retrogradeMarker, thrustMarker;
 
     private float acceleration = 150;
     private float rotation = 30;
@@ -112,22 +113,25 @@ public class PlayerMovement : MonoBehaviour
             isThrusting = false;
         }
 
-        playerAngleY += playerRotationY;
-        playerAngleX += playerRotationX;
-        playerAngleZ += playerRotationZ;
+        playerAngleY = playerRotationY;
+        playerAngleX = playerRotationX;
+        playerAngleZ = playerRotationZ;
         
-        transform.rotation = Quaternion.Euler(0, playerAngleY, 0) * 
+        rb.transform.rotation = Quaternion.Euler(0, playerAngleY, 0) * 
                 Quaternion.Euler(playerAngleX, 0, 0) *
                 Quaternion.Euler(0, 0, playerAngleZ);
 
-        cameraAngleY += playerRotationY;
-        cameraAngleX += playerRotationX;
-        playerRotationX = playerRotationY = playerRotationZ = 0;
+        // cameraAngleY += playerRotationY;
+        // cameraAngleX += playerRotationX;
+        // playerRotationX = playerRotationY = playerRotationZ = 0;
         cameraAngleY += Input.GetAxis("Mouse X") * sensitivity / sensitivityAdjustment;
         cameraAngleX = Mathf.Clamp(cameraAngleX - Input.GetAxis("Mouse Y") * sensitivity / sensitivityAdjustment, -maxcameraAngleX, maxcameraAngleX);
 
         
         cameraChild.transform.position = Vector3.MoveTowards(cameraChild.transform.position, camera.transform.position, Input.GetAxis("Mouse ScrollWheel") * scrollStep);
         camera.transform.rotation = Quaternion.Euler(0, cameraAngleY, 0) * Quaternion.Euler(cameraAngleX, 0, 0);
+
+        progradeMarker.transform.rotation = Quaternion.LookRotation(rb.velocity);
+        retrogradeMarker.transform.rotation = progradeMarker.transform.rotation * Quaternion.Euler(0, 180, 0);
     }
 }
