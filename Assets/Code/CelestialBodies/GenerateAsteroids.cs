@@ -52,8 +52,8 @@ public class GenerateAsteroids : MonoBehaviour
         Vector3 position = new Vector3(x, y, z);
         float size = (Random.value * (maxSize - minSize) + minSize);
 
-        Composition composition = new Composition(Random.value, Random.value, Random.value,
-                                                  Random.value, Random.value, Random.value);
+        Composition composition = new Composition(abundanceH * Random.value, abundanceC * Random.value, abundanceN * Random.value,
+                                                  abundanceO * Random.value, abundanceP * Random.value, abundanceSi * Random.value);
 
 
         float percentIce = 2 * Mathf.Min(composition.getH() / 2, composition.getO());
