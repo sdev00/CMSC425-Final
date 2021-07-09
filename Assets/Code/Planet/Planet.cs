@@ -5,7 +5,6 @@ using UnityEngine;
 public class Planet : MonoBehaviour
 {
     public Material material;
-    public GameObject player;
     private Vector3 axis;
     private float rotateSpeed;
     private float minRotateSpeed = 30;
@@ -13,9 +12,7 @@ public class Planet : MonoBehaviour
 
     private List<Vector3> verts;
     private List<Triangle> tris;
-    private GameObject planet;
-    private float planetSize = 40f;
-    private int smoothness = 4;
+    private GameObject body;
 
     public void Start()
     {
@@ -28,59 +25,78 @@ public class Planet : MonoBehaviour
 
     IEnumerator DisplayPlanetOnGameEnd()
     {
-        while (!player.GetComponent<PlayerMovement>().gameComplete)
+        while (!GetComponent<PlayerMovement>().gameComplete)
             yield return null;
 
-        generateEndPlanet();
-
-        display();
-        planet.transform.position = Vector3.zero;
-        axis = Random.onUnitSphere;
-        rotateSpeed = Random.Range(minRotateSpeed, maxRotateSpeed);
+        generateEndPlanet(4, 40f);
 
         while (true)
         {
-            planet.transform.RotateAround(Vector3.zero, axis, Time.deltaTime * rotateSpeed);
-            transform.position = new Vector3(0, 0, 3f * planetSize);
-            transform.LookAt(planet.transform.position);
+            body.transform.RotateAround(Vector3.zero, axis, Time.deltaTime * rotateSpeed);
+            transform.position = new Vector3(0, 0, 120);
+            transform.LookAt(body.transform.position);
             yield return null;
         }
     }
 
-    public void generateEndPlanet()
+    public void generateAsteroid(int smoothness, Composition composition)
+    {
+
+    }
+
+    public void generateEndPlanet(int smoothness, float size)
     {
         generate(smoothness);
         setNeighbors();
 
         TerrainLayer mountainLayer =
-            new TerrainLayer(4, 7,
-                             0.4f, 0.5f,
-                             0.03f, 0.08f,
-                             new Color32(240, 230, 220, 0), new Color32(140, 70, 20, 0),
+            new TerrainLayer(5, 8,
+                             0.3f, 0.3f,
+                             0.07f, 0.07f,
+                             new Color32(255, 255, 255, 0), new Color32(140, 70, 20, 0),
                              null);
 
         TerrainLayer hillLayer =
-            new TerrainLayer(4, 8,
-                             0.1f, 0.7f,
-                             0.01f, 0.07f,
-                             new Color32(0, 220, 0, 0), new Color32(180, 120, 20, 0),
+            new TerrainLayer(5, 8,
+                             0.3f, 0.7f,
+                             0.01f, 0.04f,
+                             new Color32(30, 180, 0, 0), new Color32(180, 120, 20, 0),
                              new TerrainLayer[] { mountainLayer });
 
+        TerrainLayer desertLayer =
+            new TerrainLayer(5, 8,
+                             0.3f, 0.7f,
+                             0f, 0.01f,
+                             new Color32(230, 220, 0, 0), new Color32(230, 220, 0, 0),
+                             null);
+
         TerrainLayer continentLayer =
-            new TerrainLayer(4, 10,
-                             0.1f, 0.85f,
-                             0.01f, 0.07f,
-                             new Color32(0, 180, 0, 0), new Color32(180, 160, 20, 0),
-                             new TerrainLayer[] { hillLayer });
+            new TerrainLayer(4, 8,
+                             0.1f, 0.75f,
+                             0.01f, 0.04f,
+                             new Color32(0, 220, 0, 0), new Color32(180, 160, 20, 0),
+                             new TerrainLayer[] { desertLayer, hillLayer });
+
+        TerrainLayer beachLayer =
+            new TerrainLayer(7, 10,
+                             0.2f, 0.3f,
+                             0f, 0.01f,
+                             new Color32(230, 220, 150, 0), new Color32(230, 220, 150, 0),
+                             null);
 
         TerrainLayer oceanLayer =
             new TerrainLayer(1, 1,
                              2f, 2f,
                              0f, 0f,
                              new Color32(0, 80, 220, 0), new Color32(0, 80, 220, 0),
-                             new TerrainLayer[] { continentLayer });
+                             new TerrainLayer[] { beachLayer, continentLayer });
 
         addTerrain(new TerrainLayer[] { oceanLayer }, tris);
+
+        display(size, 0f);
+        body.transform.position = Vector3.zero;
+        axis = Random.onUnitSphere;
+        rotateSpeed = Random.Range(minRotateSpeed, maxRotateSpeed);
     }
 
     public void addTerrain(TerrainLayer[] layers, IEnumerable<Triangle> source)
@@ -117,15 +133,15 @@ public class Planet : MonoBehaviour
         }
     }
 
-    public void display()
+    public void display(float size, float sizeVariation)
     {
-        if (planet)
+        if (body)
         {
-            Destroy(planet);
+            Destroy(body);
         }
 
-        planet = new GameObject("Planet");
-        MeshRenderer r = planet.AddComponent<MeshRenderer>();
+        body = new GameObject("Planet");
+        MeshRenderer r = body.AddComponent<MeshRenderer>();
         r.material = material;
         Mesh surface = new Mesh();
 
@@ -160,10 +176,11 @@ public class Planet : MonoBehaviour
         surface.colors32 = colors;
         surface.SetTriangles(triangles, 0);
 
-        MeshFilter filter = planet.AddComponent<MeshFilter>();
+        MeshFilter filter = body.AddComponent<MeshFilter>();
         filter.mesh = surface;
 
-        planet.transform.localScale = new Vector3(planetSize, planetSize, planetSize);
+        body.transform.localScale = size * 
+            new Vector3(1 + Random.value * sizeVariation, 1 + Random.value * sizeVariation, 1 + Random.value * sizeVariation); ;
     }
 
     // generate an icosahedron with a given depth of triangle subdivisions
@@ -419,5 +436,51 @@ public struct TerrainLayer
         this.topColor = topColor;
         this.sideColor = sideColor;
         this.childLayers = childLayers;
+    }
+}
+
+public struct Composition
+{
+    private float hydrogen;
+    private float carbon;
+    private float nitrogen;
+    private float oxygen;
+    private float phosphorous;
+    private float silicon;
+
+    public Composition(float H, float C, float N, float O, float P, float Si)
+    {
+        float total = H + C + N + O + P + Si;
+        hydrogen = H / total;
+        carbon = C / total;
+        nitrogen = N / total;
+        oxygen = O / total;
+        phosphorous = P / total;
+        silicon = Si / total;
+    }
+
+    public float getH()
+    {
+        return hydrogen;
+    }
+    public float getC()
+    {
+        return carbon;
+    }
+    public float getN()
+    {
+        return nitrogen;
+    }
+    public float getO()
+    {
+        return oxygen;
+    }
+    public float getP()
+    {
+        return phosphorous;
+    }
+    public float getSi()
+    {
+        return silicon;
     }
 }
