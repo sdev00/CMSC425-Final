@@ -16,7 +16,7 @@ public class PlayerHandling : MonoBehaviour
 
     private float gameDuration = 300;
     private float acceleration = 50;
-    private float rotationSpeed = 50;
+    private float rotationSpeed = 60;
     private float abilityRecharge = 3;
     private float invincibleUntil = 0;
     private float invincibilityPeriod = 2;
@@ -41,7 +41,7 @@ public class PlayerHandling : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        //Cursor.lockState = CursorLockMode.Locked;
+        Cursor.lockState = CursorLockMode.Locked;
         audioSource = GetComponent<AudioSource>();
     }
 
