@@ -7,14 +7,16 @@ public class PlayerMovement : MonoBehaviour
 {
     public GameObject camera, cameraChild;
     public int sensitivity = 100;
+    public bool gameComplete = false;
     AudioSource audioSource;
     public GameObject progradeMarker, retrogradeMarker, thrustMarker;
 
-    private float acceleration = 150;
+    private float acceleration = 50;
     private float rotation = 30;
     private float abilityRecharge = 3;
+
     private float abilitySpeed = 1500;
-    private int sensitivityAdjustment = 20;
+    private int sensitivityAdjustment = 10;
     private float cameraAngleY = 0;
     private float cameraAngleX = 0;
     private float playerAngleY = 0;
@@ -33,7 +35,7 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        Cursor.lockState = CursorLockMode.Locked;
+        //Cursor.lockState = CursorLockMode.Locked;
         audioSource = GetComponent<AudioSource>();
     }
 
@@ -50,9 +52,6 @@ public class PlayerMovement : MonoBehaviour
                         Application.Quit();
             #endif
         }
-
- 
-
 
         if (Input.GetKey(KeyCode.A))
         {
