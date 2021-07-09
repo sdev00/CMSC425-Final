@@ -10,8 +10,9 @@ public class PlayerHandling : MonoBehaviour
     public bool gameComplete = false;
     public int health = 3;
     public ResourceData resources = ResourceData.emptyResourceData();
-    public AudioClip collisionSound;
+    public AudioClip collisionSound, miningSound;
     AudioSource audioSource;
+    public GameObject progradeMarker, retrogradeMarker, thrustMarker;
 
     private float gameDuration = 300;
     private float acceleration = 50;
@@ -102,7 +103,7 @@ public class PlayerHandling : MonoBehaviour
             rb.velocity += Time.deltaTime * acceleration * transform.up;
             appliedNewThrust = true;
         }
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (Input.GetKey(KeyCode.LeftControl))
         {
             rb.velocity -= Time.deltaTime * acceleration * transform.up;
             appliedNewThrust = true;
@@ -120,27 +121,33 @@ public class PlayerHandling : MonoBehaviour
             isThrusting = false;
         }
 
-        playerAngleY += playerRotationY;
-        playerAngleX += playerRotationX;
-        playerAngleZ += playerRotationZ;
+        playerAngleY = playerRotationY;
+        playerAngleX = playerRotationX;
+        playerAngleZ = playerRotationZ;
         
-        transform.rotation = Quaternion.Euler(0, playerAngleY, 0) * 
+        rb.transform.rotation = Quaternion.Euler(0, playerAngleY, 0) * 
                 Quaternion.Euler(playerAngleX, 0, 0) *
                 Quaternion.Euler(0, 0, playerAngleZ);
 
-        cameraAngleY += playerRotationY;
-        cameraAngleX += playerRotationX;
-        playerRotationX = playerRotationY = playerRotationZ = 0;
+        // cameraAngleY += playerRotationY;
+        // cameraAngleX += playerRotationX;
+        // playerRotationX = playerRotationY = playerRotationZ = 0;
         cameraAngleY += Input.GetAxis("Mouse X") * sensitivity / sensitivityAdjustment;
         cameraAngleX = Mathf.Clamp(cameraAngleX - Input.GetAxis("Mouse Y") * sensitivity / sensitivityAdjustment, -maxcameraAngleX, maxcameraAngleX);
 
         
         cameraChild.transform.position = Vector3.MoveTowards(cameraChild.transform.position, camera.transform.position, Input.GetAxis("Mouse ScrollWheel") * scrollStep);
         camera.transform.rotation = Quaternion.Euler(0, cameraAngleY, 0) * Quaternion.Euler(cameraAngleX, 0, 0);
+
+        progradeMarker.transform.rotation = Quaternion.LookRotation(rb.velocity);
+        retrogradeMarker.transform.rotation = progradeMarker.transform.rotation * Quaternion.Euler(0, 180, 0);
     }
 
     void OnCollisionEnter(Collision collision)
     {
+        if (collision.gameObject.tag == "Marker")
+            return;
+
         if (collision.relativeVelocity.magnitude > 50 && Time.time > invincibleUntil)
         {
             invincibleUntil = Time.time + invincibilityPeriod;
@@ -155,8 +162,19 @@ public class PlayerHandling : MonoBehaviour
         else
         {
             AsteroidData ad = collision.gameObject.GetComponent<AsteroidData>();
-            resources += ad.resources;
-            ad.resources = ResourceData.emptyResourceData();
+            if (ad.resources.getTotal() > 0)
+            {
+                resources += ad.resources;
+                audioSource.PlayOneShot(miningSound);
+                ad.resources = ResourceData.emptyResourceData();
+            }
         }
     }
+}
+
+public enum Difficulty
+{
+    Easy,
+    Medium,
+    Hard
 }

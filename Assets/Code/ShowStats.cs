@@ -74,8 +74,6 @@ public class ShowStats : MonoBehaviour
 
         while (playerHandling.health < healthBar.Count)
         {
-            Debug.Log(playerHandling.health);
-            Debug.Log(healthBar.Count);
             Destroy(healthBar[healthBar.Count - 1]);
             healthBar.RemoveAt(healthBar.Count - 1);
         }
