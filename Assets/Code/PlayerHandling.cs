@@ -14,6 +14,7 @@ public class PlayerHandling : MonoBehaviour
     AudioSource audioSource;
     public GameObject progradeMarker, retrogradeMarker, thrustMarker;
 
+    public float maxTime;
     public float endTime;
     private float acceleration = 50;
     private float rotationSpeed = 60;
@@ -68,6 +69,7 @@ public class PlayerHandling : MonoBehaviour
         }
 
         health = d.health;
+        maxTime = d.timeSeconds;
         endTime = Time.time + d.timeSeconds;
         asteroidGen = GetComponent<GenerateAsteroids>();
         asteroidGen.asteroidsAdjustment = d.asteroidSpread;
@@ -86,7 +88,7 @@ public class PlayerHandling : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        Cursor.lockState = CursorLockMode.Locked;
+        //Cursor.lockState = CursorLockMode.Locked;
         audioSource = GetComponent<AudioSource>();
 
         runGame(DifficultyLevel.Hard);
