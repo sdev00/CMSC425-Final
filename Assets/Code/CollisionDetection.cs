@@ -36,9 +36,9 @@ public class CollisionDetection : MonoBehaviour
             for (int i = 0; i < pieceCount; i++)
             {
                 Debug.Log("generating asteroid");
-                GenerateAsteroids.summonAsteroid(transform.position,
-                    (minSpeed + Random.value * (speed - minSpeed)) * Random.rotation.eulerAngles, 
-                    minSize + Random.value * (maxSize - minSize));
+                //GenerateAsteroids.summonAsteroid(transform.position,
+                //    (minSpeed + Random.value * (speed - minSpeed)) * Random.rotation.eulerAngles, 
+                //    minSize + Random.value * (maxSize - minSize));
             }
             Destroy(gameObject);
         }

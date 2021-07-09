@@ -133,6 +133,8 @@ GameObject:
   - component: {fileID: 286481473}
   - component: {fileID: 286481474}
   - component: {fileID: 286481475}
+  - component: {fileID: 286481476}
+  - component: {fileID: 286481477}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -170,6 +172,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sensitivity: 100
+  gameComplete: 1
 --- !u!54 &286481474
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -195,11 +198,33 @@ MonoBehaviour:
   m_GameObject: {fileID: 286481471}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c9aae1259e1a3147b25e46dee236713, type: 3}
+  m_Script: {fileID: 11500000, guid: 7a79718c7f293744998184588fce1899, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 4ce6a3dcd27b96041a7d53ebc377c972, type: 2}
-  player: {fileID: 286481471}
+--- !u!114 &286481476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 286481471}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f563aa6de6ed36a4e8d496029c09cd0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &286481477
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 286481471}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f563aa6de6ed36a4e8d496029c09cd0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &333746581
 GameObject:
   m_ObjectHideFlags: 0
@@ -556,26 +581,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!1 &955188079 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2849204206511744662, guid: 04d4aee6d1be2ed469a176ef145ae8b4,
-    type: 3}
-  m_PrefabInstance: {fileID: 2849204207175689721}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &955188080
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 955188079}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f563aa6de6ed36a4e8d496029c09cd0a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  asteroidInput: {fileID: 2849204206511744662, guid: 04d4aee6d1be2ed469a176ef145ae8b4,
-    type: 3}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0

@@ -70,6 +70,7 @@ public class EndPlanet : MonoBehaviour
 
     IEnumerator DisplayPlanetOnGameEnd()
     {
+        Debug.Log(GetComponent<PlayerMovement>().gameComplete);
         while (!GetComponent<PlayerMovement>().gameComplete)
             yield return null;
 

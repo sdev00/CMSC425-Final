@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public int sensitivity = 100;
-    public bool gameComplete = true;
+    public bool gameComplete = false;
     private float acceleration = 150;
     private float abilitySpeed = 1500;
     private int sensitivityAdjustment = 20;

@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class CelestialBody
 {
-    public static Material material;
     public GameObject body;
 
     private List<Vector3> verts;
@@ -58,7 +57,7 @@ public class CelestialBody
     {
         body = new GameObject("Celestial Body");
         MeshRenderer r = body.AddComponent<MeshRenderer>();
-        r.material = material;
+        r.material = Resources.Load("Materials/CelestialBody", typeof(Material)) as Material;
         Mesh surface = new Mesh();
 
         int[] triangles = new int[3 * tris.Count];
@@ -363,7 +362,7 @@ public struct Composition
     private float carbon;
     private float nitrogen;
     private float oxygen;
-    private float phosphorous;
+    private float phosphorus;
     private float silicon;
 
     public Composition(float H, float C, float N, float O, float P, float Si)
@@ -373,7 +372,7 @@ public struct Composition
         carbon = C / total;
         nitrogen = N / total;
         oxygen = O / total;
-        phosphorous = P / total;
+        phosphorus = P / total;
         silicon = Si / total;
     }
 
@@ -395,7 +394,7 @@ public struct Composition
     }
     public float getP()
     {
-        return phosphorous;
+        return phosphorus;
     }
     public float getSi()
     {
