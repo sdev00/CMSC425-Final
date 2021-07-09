@@ -3,17 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
-public class PlayerMovement : MonoBehaviour
+public class PlayerHandling : MonoBehaviour
 {
     public GameObject camera, cameraChild;
     public int sensitivity = 100;
     public bool gameComplete = false;
+    public int health = 3;
+    public ResourceData resources = ResourceData.emptyResourceData();
+    public AudioClip collisionSound, miningSound;
     AudioSource audioSource;
     public GameObject progradeMarker, retrogradeMarker, thrustMarker;
 
+    private float gameDuration = 300;
     private float acceleration = 50;
-    private float rotation = 60;
+    private float rotationSpeed = 60;
     private float abilityRecharge = 3;
+    private float invincibleUntil = 0;
+    private float invincibilityPeriod = 2;
 
     private float abilitySpeed = 1500;
     private int sensitivityAdjustment = 10;
@@ -27,7 +33,7 @@ public class PlayerMovement : MonoBehaviour
     private float playerRotationZ = 0;
     private float maxcameraAngleX = 90;
     private bool isThrusting = false;
-    private float scrollStep = 20;
+    private float scrollStep = 10;
 
     private Rigidbody rb;
 
@@ -53,29 +59,32 @@ public class PlayerMovement : MonoBehaviour
             #endif
         }
 
+        if (gameComplete)
+            return;
+
         if (Input.GetKey(KeyCode.A))
         {
-            playerRotationY -= Time.deltaTime * rotation;
+            playerRotationY -= Time.deltaTime * rotationSpeed;
         }
         if (Input.GetKey(KeyCode.D))
         {
-            playerRotationY += Time.deltaTime * rotation;
+            playerRotationY += Time.deltaTime * rotationSpeed;
         }
         if (Input.GetKey(KeyCode.W))
         {
-            playerRotationX += Time.deltaTime * rotation;
+            playerRotationX += Time.deltaTime * rotationSpeed;
         }
         if (Input.GetKey(KeyCode.S))
         {
-            playerRotationX -= Time.deltaTime * rotation;
+            playerRotationX -= Time.deltaTime * rotationSpeed;
         }
         if (Input.GetKey(KeyCode.Q))
         {
-            playerRotationZ += Time.deltaTime * rotation;
+            playerRotationZ += Time.deltaTime * rotationSpeed;
         }
         if (Input.GetKey(KeyCode.E))
         {
-            playerRotationZ -= Time.deltaTime * rotation;
+            playerRotationZ -= Time.deltaTime * rotationSpeed;
         }
 
         bool appliedNewThrust = false;
@@ -89,7 +98,7 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity -= Time.deltaTime * acceleration * transform.forward;
             appliedNewThrust = true;
         }
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (Input.GetKey(KeyCode.Space))
         {
             rb.velocity += Time.deltaTime * acceleration * transform.up;
             appliedNewThrust = true;
@@ -133,4 +142,39 @@ public class PlayerMovement : MonoBehaviour
         progradeMarker.transform.rotation = Quaternion.LookRotation(rb.velocity);
         retrogradeMarker.transform.rotation = progradeMarker.transform.rotation * Quaternion.Euler(0, 180, 0);
     }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "Marker")
+            return;
+
+        if (collision.relativeVelocity.magnitude > 50 && Time.time > invincibleUntil)
+        {
+            invincibleUntil = Time.time + invincibilityPeriod;
+            audioSource.PlayOneShot(collisionSound);
+            health -= 1;
+            if (health < 1)
+            {
+                gameComplete = true;
+                audioSource.Stop();
+            }
+        }
+        else
+        {
+            AsteroidData ad = collision.gameObject.GetComponent<AsteroidData>();
+            if (ad.resources.getTotal() > 0)
+            {
+                resources += ad.resources;
+                audioSource.PlayOneShot(miningSound);
+                ad.resources = ResourceData.emptyResourceData();
+            }
+        }
+    }
+}
+
+public enum Difficulty
+{
+    Easy,
+    Medium,
+    Hard
 }

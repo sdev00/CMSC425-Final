@@ -4,20 +4,16 @@ using UnityEngine;
 
 public class GenerateAsteroids : MonoBehaviour
 {
-    private List<Asteroid> asteroids;
-    private float quantityCorrection = 0;
-    private float abundanceH = 2f;
-    private float abundanceC = 2f;
-    private float abundanceN = 1f;
-    private float abundanceO = 1f;
-    private float abundanceP = 0.5f;
-    private float abundanceSi = 0.5f;
+    public static float minSize = 2f;
+    public static float maxSize = 50f;
+    private PlayerHandling playerHandling;
 
-    private int asteroidCount = 200;
-    private int minRange = -1000;
-    private int maxRange = 1000;
-    private float minSize = 2f;
-    private float maxSize = 50f;
+    private List<Asteroid> asteroids;
+    private float quantityCorrection = 1.5f;
+
+    private int asteroidCount = 1000;
+    private int minRange = -2000;
+    private int maxRange = 2000;
 
     private Color32 iceColorMin = new Color32(150, 210, 255, 0),
                     iceColorMax = new Color32(255, 255, 255, 0);
@@ -37,11 +33,15 @@ public class GenerateAsteroids : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        playerHandling = GetComponent<PlayerHandling>();
+
         asteroids = new List<Asteroid>();
         for (int i = 0; i < asteroidCount; i++)
         {
             generateAsteroid();
         }
+
+        StartCoroutine("DestroyAsteroidsOnGameEnd");
     }
 
     public void generateAsteroid()
@@ -52,11 +52,10 @@ public class GenerateAsteroids : MonoBehaviour
         Vector3 position = new Vector3(x, y, z);
         float size = (Random.value * (maxSize - minSize) + minSize);
 
-        Composition composition = new Composition(Random.value, Random.value, Random.value,
-                                                  Random.value, Random.value, Random.value);
+        ResourceData resourceData = ResourceData.randomResourceData((int) (size * quantityCorrection));
 
 
-        float percentIce = 2 * Mathf.Min(composition.getH() / 2, composition.getO());
+        float percentIce = 2 * Mathf.Min(resourceData.getPercentH() / 2, resourceData.getPercentO());
         Color32 iceColor = Color32.Lerp(iceColorMin, iceColorMax, Random.value);
         TerrainLayer iceLayer =
             new TerrainLayer(1, 3,
@@ -65,7 +64,7 @@ public class GenerateAsteroids : MonoBehaviour
                              iceColor, iceColorMin,
                              null);
 
-        float percentSand = composition.getSi();
+        float percentSand = 2 * Mathf.Min(resourceData.getPercentO() / 2, resourceData.getPercentSi());
         Color32 sandColor = Color32.Lerp(sandColorMin, sandColorMax, Random.value);
         TerrainLayer sandLayer =
             new TerrainLayer(2, 5,
@@ -74,29 +73,29 @@ public class GenerateAsteroids : MonoBehaviour
                              sandColor, sandColorMin,
                              null);
 
-        float percentSchreibersite = composition.getP();
+        float percentSchreibersite = resourceData.getPercentP();
         Color32 schreibersiteColor = Color32.Lerp(schreibersiteColorMin, schreibersiteColorMax, Random.value);
         TerrainLayer schreibersiteLayer =
             new TerrainLayer(5, 10,
-                             percentSchreibersite / 2, percentSchreibersite * 2,
+                             percentSchreibersite * 2, percentSchreibersite * 4,
                              0.02f, 0.02f + percentSchreibersite * 0.1f,
                              schreibersiteColor, schreibersiteColorMin,
                              null);
 
-        float percentIronNitrate = composition.getN();
+        float percentIronNitrate = resourceData.getPercentN();
         Color32 ironNitrateColor = Color32.Lerp(ironNitrateColorMin, ironNitrateColorMax, Random.value);
         TerrainLayer ironNitrateLayer =
             new TerrainLayer(3, 5,
-                             percentIronNitrate / 2, percentIronNitrate,
+                             percentIronNitrate / 2, percentIronNitrate * 2,
                              0.03f, 0.05f,
                              ironNitrateColor, ironNitrateColorMin,
                              null);
 
-        float percentCoal = composition.getC();
+        float percentCoal = resourceData.getPercentC();
         Color32 coalColor = Color32.Lerp(coalColorMin, coalColorMax, Random.value);
         TerrainLayer coalLayer =
             new TerrainLayer(8, 12,
-                             percentCoal / 5, percentCoal,
+                             percentCoal / 5, percentCoal / 2,
                              0.02f, 0.02f,
                              coalColor, coalColorMin,
                              null);
@@ -117,13 +116,24 @@ public class GenerateAsteroids : MonoBehaviour
                              baseColor, baseColor,
                              new TerrainLayer[] { craterLayer, ironNitrateLayer, coalLayer, sandLayer, iceLayer });
 
-        asteroids.Add(new Asteroid(position, size, new TerrainLayer[] { baseLayer }, composition));
+        asteroids.Add(new Asteroid(position, size, new TerrainLayer[] { baseLayer }, resourceData));
     }
 
     // Update is called once per frame
     void Update()
     {
 
+    }
+
+    IEnumerator DestroyAsteroidsOnGameEnd()
+    {
+        while (!playerHandling.gameComplete)
+            yield return null;
+
+        foreach (Asteroid a in asteroids)
+        {
+            Destroy(a.body);
+        }
     }
 }
 
@@ -132,18 +142,25 @@ public class Asteroid
     public GameObject body;
     public float size;
     public TerrainLayer[] terrain;
-    public Composition composition;
-    private int smoothness = 2;
+    public ResourceData resourceData;
+    private int smoothness;
     private float sizeVariation = 0.8f;
     private static float asteroidDensity = 0.05f;
 
-    public Asteroid(Vector3 position, float size, TerrainLayer[] terrain, Composition composition)
+    public Asteroid(Vector3 position, float size, TerrainLayer[] terrain, ResourceData resourceData)
     {
-        this.composition = composition;
+        smoothness = 1 + (int)(2 * size / (GenerateAsteroids.maxSize - GenerateAsteroids.minSize));
+
+        this.resourceData = resourceData;
         body = new CelestialBody(position, smoothness, size, sizeVariation, terrain).body;
+
         Rigidbody rb = body.AddComponent<Rigidbody>();
         rb.mass = asteroidDensity * 4 / 3 * Mathf.PI * Mathf.Pow(size / 2, 3);
+
         MeshCollider mc = body.AddComponent<MeshCollider>();
         mc.convex = true;
+
+        AsteroidData ad = body.AddComponent<AsteroidData>();
+        ad.resources = resourceData;
     }
 }

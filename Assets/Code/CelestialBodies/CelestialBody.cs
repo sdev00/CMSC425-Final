@@ -356,48 +356,123 @@ public struct TerrainLayer
     }
 }
 
-public struct Composition
+public class ResourceData
 {
-    private float hydrogen;
-    private float carbon;
-    private float nitrogen;
-    private float oxygen;
-    private float phosphorus;
-    private float silicon;
+    private int total;
+    private int hydrogen;
+    private int carbon;
+    private int nitrogen;
+    private int oxygen;
+    private int phosphorus;
+    private int silicon;
 
-    public Composition(float H, float C, float N, float O, float P, float Si)
+    private static float abundanceH = 15f;
+    private static float abundanceC = 6f;
+    private static float abundanceN = 2f;
+    private static float abundanceO = 12f;
+    private static float abundanceP = 1f;
+    private static float abundanceSi = 3f;
+
+    public ResourceData(int H, int C, int N, int O, int P, int Si)
     {
-        float total = H + C + N + O + P + Si;
-        hydrogen = H / total;
-        carbon = C / total;
-        nitrogen = N / total;
-        oxygen = O / total;
-        phosphorus = P / total;
-        silicon = Si / total;
+        total = H + C + N + O + P + Si;
+        hydrogen = H;
+        carbon = C;
+        nitrogen = N;
+        oxygen = O;
+        phosphorus = P;
+        silicon = Si;
     }
 
-    public float getH()
+    public int getH()
     {
         return hydrogen;
     }
-    public float getC()
+    public int getC()
     {
         return carbon;
     }
-    public float getN()
+    public int getN()
     {
         return nitrogen;
     }
-    public float getO()
+    public int getO()
     {
         return oxygen;
     }
-    public float getP()
+    public int getP()
     {
         return phosphorus;
     }
-    public float getSi()
+    public int getSi()
     {
         return silicon;
+    }
+    public int getTotal()
+    {
+        return total;
+    }
+
+    public float getPercentH()
+    {
+        return hydrogen / (float) total;
+    }
+    public float getPercentC()
+    {
+        return carbon / (float) total;
+    }
+    public float getPercentN()
+    {
+        return nitrogen / (float) total;
+    }
+    public float getPercentO()
+    {
+        return oxygen / (float) total;
+    }
+    public float getPercentP()
+    {
+        return phosphorus / (float) total;
+    }
+    public float getPercentSi()
+    {
+        return silicon / (float) total;
+    }
+
+    public static ResourceData randomResourceData(int total)
+    {
+        float H = Random.value * abundanceH;
+        float C = Random.value * abundanceC;
+        float N = Random.value * abundanceN;
+        float O = Random.value * abundanceO;
+        float P = Random.value * abundanceP;
+        float Si = Random.value * abundanceSi;
+
+        float tempTotal = H + C + N + O + P + Si;
+        float scale = total / tempTotal;
+        return new ResourceData((int) (H * scale), (int) (C * scale), (int) (N * scale),
+                               (int) (O * scale), (int) (P * scale), (int) (Si * scale));
+    }
+
+    public static ResourceData emptyResourceData()
+    {
+        return new ResourceData(0, 0, 0, 0, 0, 0);
+    }
+
+    public static ResourceData operator +(ResourceData r1, ResourceData r2)
+    {
+        return new ResourceData(r1.hydrogen + r2.hydrogen, r1.carbon + r2.carbon, r1.nitrogen + r2.nitrogen,
+                                r1.oxygen + r2.oxygen, r1.phosphorus + r2.phosphorus, r1.silicon + r2.silicon);
+    }
+
+    public static ResourceData operator -(ResourceData r1, ResourceData r2)
+    {
+        return new ResourceData(r1.hydrogen - r2.hydrogen, r1.carbon - r2.carbon, r1.nitrogen - r2.nitrogen,
+                                r1.oxygen - r2.oxygen, r1.phosphorus - r2.phosphorus, r1.silicon - r2.silicon);
+    }
+
+    public static ResourceData min(ResourceData r1, ResourceData r2)
+    {
+        return new ResourceData(Mathf.Min(r1.hydrogen, r2.hydrogen), Mathf.Min(r1.carbon, r2.carbon), Mathf.Min(r1.nitrogen, r2.nitrogen),
+                                Mathf.Min(r1.oxygen, r2.oxygen), Mathf.Min(r1.phosphorus, r2.phosphorus), Mathf.Min(r1.silicon, r2.silicon));
     }
 }
