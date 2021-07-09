@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
-public class PlayerMovement : MonoBehaviour
+public class PlayerHandling : MonoBehaviour
 {
     public GameObject camera, cameraChild;
     public int sensitivity = 100;
@@ -11,11 +11,11 @@ public class PlayerMovement : MonoBehaviour
     AudioSource audioSource;
 
     private float acceleration = 50;
-    private float rotation = 30;
+    private float rotationSpeed = 50;
     private float abilityRecharge = 3;
 
     private float abilitySpeed = 1500;
-    private int sensitivityAdjustment = 10;
+    private int sensitivityAdjustment = 20;
     private float cameraAngleY = 0;
     private float cameraAngleX = 0;
     private float playerAngleY = 0;
@@ -26,7 +26,7 @@ public class PlayerMovement : MonoBehaviour
     private float playerRotationZ = 0;
     private float maxcameraAngleX = 90;
     private bool isThrusting = false;
-    private float scrollStep = 20;
+    private float scrollStep = 10;
 
     private Rigidbody rb;
 
@@ -52,29 +52,32 @@ public class PlayerMovement : MonoBehaviour
             #endif
         }
 
+        if (gameComplete)
+            return;
+
         if (Input.GetKey(KeyCode.A))
         {
-            playerRotationY -= Time.deltaTime * rotation;
+            playerRotationY -= Time.deltaTime * rotationSpeed;
         }
         if (Input.GetKey(KeyCode.D))
         {
-            playerRotationY += Time.deltaTime * rotation;
+            playerRotationY += Time.deltaTime * rotationSpeed;
         }
         if (Input.GetKey(KeyCode.W))
         {
-            playerRotationX += Time.deltaTime * rotation;
+            playerRotationX += Time.deltaTime * rotationSpeed;
         }
         if (Input.GetKey(KeyCode.S))
         {
-            playerRotationX -= Time.deltaTime * rotation;
+            playerRotationX -= Time.deltaTime * rotationSpeed;
         }
         if (Input.GetKey(KeyCode.Q))
         {
-            playerRotationZ += Time.deltaTime * rotation;
+            playerRotationZ += Time.deltaTime * rotationSpeed;
         }
         if (Input.GetKey(KeyCode.E))
         {
-            playerRotationZ -= Time.deltaTime * rotation;
+            playerRotationZ -= Time.deltaTime * rotationSpeed;
         }
 
         bool appliedNewThrust = false;

@@ -356,24 +356,32 @@ public struct TerrainLayer
     }
 }
 
-public struct Composition
+public class Composition
 {
-    private float hydrogen;
-    private float carbon;
-    private float nitrogen;
-    private float oxygen;
-    private float phosphorus;
-    private float silicon;
+    private int total;
+    private int hydrogen;
+    private int carbon;
+    private int nitrogen;
+    private int oxygen;
+    private int phosphorus;
+    private int silicon;
 
-    public Composition(float H, float C, float N, float O, float P, float Si)
+    private static float abundanceH = 4f;
+    private static float abundanceC = 4f;
+    private static float abundanceN = 2f;
+    private static float abundanceO = 3f;
+    private static float abundanceP = 1f;
+    private static float abundanceSi = 1f;
+
+    public Composition(int H, int C, int N, int O, int P, int Si)
     {
-        float total = H + C + N + O + P + Si;
-        hydrogen = H / total;
-        carbon = C / total;
-        nitrogen = N / total;
-        oxygen = O / total;
-        phosphorus = P / total;
-        silicon = Si / total;
+        total = H + C + N + O + P + Si;
+        hydrogen = H;
+        carbon = C;
+        nitrogen = N;
+        oxygen = O;
+        phosphorus = P;
+        silicon = Si;
     }
 
     public float getH()
@@ -399,5 +407,45 @@ public struct Composition
     public float getSi()
     {
         return silicon;
+    }
+
+    public float getPercentH()
+    {
+        return hydrogen / (float) total;
+    }
+    public float getPercentC()
+    {
+        return carbon / (float) total;
+    }
+    public float getPercentN()
+    {
+        return nitrogen / (float) total;
+    }
+    public float getPercentO()
+    {
+        return oxygen / (float) total;
+    }
+    public float getPercentP()
+    {
+        return phosphorus / (float) total;
+    }
+    public float getPercentSi()
+    {
+        return silicon / (float) total;
+    }
+
+    public static Composition randomComposition(int total)
+    {
+        float H = Random.value * abundanceH;
+        float C = Random.value * abundanceC;
+        float N = Random.value * abundanceN;
+        float O = Random.value * abundanceO;
+        float P = Random.value * abundanceP;
+        float Si = Random.value * abundanceSi;
+
+        float tempTotal = H + C + N + O + P + Si;
+        float scale = total / tempTotal;
+        return new Composition((int) (H * scale), (int) (C * scale), (int) (N * scale),
+                               (int) (O * scale), (int) (P * scale), (int) (Si * scale));
     }
 }

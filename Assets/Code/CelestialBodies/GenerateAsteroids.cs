@@ -6,12 +6,6 @@ public class GenerateAsteroids : MonoBehaviour
 {
     private List<Asteroid> asteroids;
     private float quantityCorrection = 0;
-    private float abundanceH = 2f;
-    private float abundanceC = 2f;
-    private float abundanceN = 1f;
-    private float abundanceO = 1f;
-    private float abundanceP = 0.5f;
-    private float abundanceSi = 0.5f;
 
     private int asteroidCount = 200;
     private int minRange = -1000;
@@ -52,11 +46,10 @@ public class GenerateAsteroids : MonoBehaviour
         Vector3 position = new Vector3(x, y, z);
         float size = (Random.value * (maxSize - minSize) + minSize);
 
-        Composition composition = new Composition(abundanceH * Random.value, abundanceC * Random.value, abundanceN * Random.value,
-                                                  abundanceO * Random.value, abundanceP * Random.value, abundanceSi * Random.value);
+        Composition composition = Composition.randomComposition((int) size);
 
 
-        float percentIce = 2 * Mathf.Min(composition.getH() / 2, composition.getO());
+        float percentIce = 2 * Mathf.Min(composition.getPercentH() / 2, composition.getPercentO());
         Color32 iceColor = Color32.Lerp(iceColorMin, iceColorMax, Random.value);
         TerrainLayer iceLayer =
             new TerrainLayer(1, 3,
@@ -65,7 +58,7 @@ public class GenerateAsteroids : MonoBehaviour
                              iceColor, iceColorMin,
                              null);
 
-        float percentSand = composition.getSi();
+        float percentSand = 2 * Mathf.Min(composition.getPercentO() / 2, composition.getPercentSi());
         Color32 sandColor = Color32.Lerp(sandColorMin, sandColorMax, Random.value);
         TerrainLayer sandLayer =
             new TerrainLayer(2, 5,
@@ -74,7 +67,7 @@ public class GenerateAsteroids : MonoBehaviour
                              sandColor, sandColorMin,
                              null);
 
-        float percentSchreibersite = composition.getP();
+        float percentSchreibersite = composition.getPercentP();
         Color32 schreibersiteColor = Color32.Lerp(schreibersiteColorMin, schreibersiteColorMax, Random.value);
         TerrainLayer schreibersiteLayer =
             new TerrainLayer(5, 10,
@@ -83,7 +76,7 @@ public class GenerateAsteroids : MonoBehaviour
                              schreibersiteColor, schreibersiteColorMin,
                              null);
 
-        float percentIronNitrate = composition.getN();
+        float percentIronNitrate = composition.getPercentN();
         Color32 ironNitrateColor = Color32.Lerp(ironNitrateColorMin, ironNitrateColorMax, Random.value);
         TerrainLayer ironNitrateLayer =
             new TerrainLayer(3, 5,
@@ -92,7 +85,7 @@ public class GenerateAsteroids : MonoBehaviour
                              ironNitrateColor, ironNitrateColorMin,
                              null);
 
-        float percentCoal = composition.getC();
+        float percentCoal = composition.getPercentC();
         Color32 coalColor = Color32.Lerp(coalColorMin, coalColorMax, Random.value);
         TerrainLayer coalLayer =
             new TerrainLayer(8, 12,
