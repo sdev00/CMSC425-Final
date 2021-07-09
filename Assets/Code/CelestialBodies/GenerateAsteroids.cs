@@ -153,9 +153,14 @@ public class Asteroid
 
         this.resourceData = resourceData;
         body = new CelestialBody(position, smoothness, size, sizeVariation, terrain).body;
+
         Rigidbody rb = body.AddComponent<Rigidbody>();
         rb.mass = asteroidDensity * 4 / 3 * Mathf.PI * Mathf.Pow(size / 2, 3);
+
         MeshCollider mc = body.AddComponent<MeshCollider>();
         mc.convex = true;
+
+        AsteroidData ad = body.AddComponent<AsteroidData>();
+        ad.resources = resourceData;
     }
 }

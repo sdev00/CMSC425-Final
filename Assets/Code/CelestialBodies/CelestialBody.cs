@@ -453,6 +453,11 @@ public class ResourceData
                                (int) (O * scale), (int) (P * scale), (int) (Si * scale));
     }
 
+    public static ResourceData emptyResourceData()
+    {
+        return new ResourceData(0, 0, 0, 0, 0, 0);
+    }
+
     public static ResourceData operator +(ResourceData r1, ResourceData r2)
     {
         return new ResourceData(r1.hydrogen + r2.hydrogen, r1.carbon + r2.carbon, r1.nitrogen + r2.nitrogen,

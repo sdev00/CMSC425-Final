@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class EndPlanet : MonoBehaviour
 {
+    public GameObject cameraChild;
     private GameObject planet;
 
     private Vector3 axis;
@@ -64,6 +65,8 @@ public class EndPlanet : MonoBehaviour
 
     public void generateEndPlanet()
     {
+        //ResourceData acquiredResources = GetComponent<PlayerHandling>();
+
         TerrainLayer mountainLayer =
             new TerrainLayer(5, 8,
                              0.3f, 0.3f,
@@ -129,6 +132,8 @@ public class EndPlanet : MonoBehaviour
             planet.transform.RotateAround(planet.transform.position, planet.transform.position + axis, Time.deltaTime * rotateSpeed);
             transform.position = planet.transform.position + new Vector3(0, 0, 120);
             transform.LookAt(planet.transform.position);
+            cameraChild.transform.position = transform.position + new Vector3(0, 3, 6);
+            cameraChild.transform.LookAt(planet.transform.position);
             yield return null;
         }
     }

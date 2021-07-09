@@ -9,7 +9,7 @@ public class PlayerHandling : MonoBehaviour
     public int sensitivity = 100;
     public bool gameComplete = false;
     public int health = 3;
-    public ResourceData resources = new ResourceData(0, 0, 0, 0, 0, 0);
+    public ResourceData resources = ResourceData.emptyResourceData();
     public AudioClip collisionSound;
     AudioSource audioSource;
 
@@ -152,6 +152,12 @@ public class PlayerHandling : MonoBehaviour
                 gameComplete = true;
                 audioSource.Stop();
             }
+        }
+        else
+        {
+            AsteroidData ad = collision.gameObject.GetComponent<AsteroidData>();
+            resources += ad.resources;
+            ad.resources = ResourceData.emptyResourceData();
         }
     }
 }

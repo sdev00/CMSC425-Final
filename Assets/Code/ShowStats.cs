@@ -79,6 +79,11 @@ public class ShowStats : MonoBehaviour
             Destroy(healthBar[healthBar.Count - 1]);
             healthBar.RemoveAt(healthBar.Count - 1);
         }
+
+        if (player.GetComponent<PlayerHandling>().gameComplete) {
+            Destroy(resourceStats);
+            Destroy(gameObject);
+        }
     }
 
     double RoundToSignificantDigits(float d, int digits)
