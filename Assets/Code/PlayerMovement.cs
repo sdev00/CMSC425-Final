@@ -10,12 +10,12 @@ public class PlayerMovement : MonoBehaviour
     public bool gameComplete = false;
     AudioSource audioSource;
 
-    private float acceleration = 150;
+    private float acceleration = 50;
     private float rotation = 30;
     private float abilityRecharge = 3;
 
     private float abilitySpeed = 1500;
-    private int sensitivityAdjustment = 20;
+    private int sensitivityAdjustment = 10;
     private float cameraAngleY = 0;
     private float cameraAngleX = 0;
     private float playerAngleY = 0;

@@ -25,22 +25,22 @@ public class CollisionDetection : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        float mass = collision.gameObject.GetComponent<Rigidbody>().mass;
-        float speed = collision.relativeVelocity.magnitude;
-        Debug.Log("speed=" + speed);
-        Debug.Log("mass=" + mass);
-        Debug.Log(speed >= speedToDestroy);
-        if (speed >= speedToDestroy && mass >= massToDestroy)
-        {
-            Debug.Log("destroyed");
-            for (int i = 0; i < pieceCount; i++)
-            {
-                Debug.Log("generating asteroid");
-                //GenerateAsteroids.summonAsteroid(transform.position,
-                //    (minSpeed + Random.value * (speed - minSpeed)) * Random.rotation.eulerAngles, 
-                //    minSize + Random.value * (maxSize - minSize));
-            }
-            Destroy(gameObject);
-        }
+        //float mass = collision.gameObject.GetComponent<Rigidbody>().mass;
+        //float speed = collision.relativeVelocity.magnitude;
+        //Debug.Log("speed=" + speed);
+        //Debug.Log("mass=" + mass);
+        //Debug.Log(speed >= speedToDestroy);
+        //if (speed >= speedToDestroy && mass >= massToDestroy)
+        //{
+        //    Debug.Log("destroyed");
+        //    for (int i = 0; i < pieceCount; i++)
+        //    {
+        //        Debug.Log("generating asteroid");
+        //        //GenerateAsteroids.summonAsteroid(transform.position,
+        //        //    (minSpeed + Random.value * (speed - minSpeed)) * Random.rotation.eulerAngles, 
+        //        //    minSize + Random.value * (maxSize - minSize));
+        //    }
+        //    Destroy(gameObject);
+        //}
     }
 }
