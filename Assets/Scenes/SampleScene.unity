@@ -293,7 +293,7 @@ MonoBehaviour:
   cameraChild: {fileID: 963194225}
   sensitivity: 100
   gameComplete: 0
-  health: 5
+  health: 2
   collisionSound: {fileID: 8300000, guid: 0662db8484bfcad48a167bdcd676bd6c, type: 3}
 --- !u!54 &286481474
 Rigidbody:
@@ -426,7 +426,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 286481471}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7a79718c7f293744998184588fce1899, type: 3}
   m_Name: 

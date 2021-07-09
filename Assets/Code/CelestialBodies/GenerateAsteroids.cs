@@ -6,6 +6,7 @@ public class GenerateAsteroids : MonoBehaviour
 {
     public static float minSize = 2f;
     public static float maxSize = 50f;
+    private PlayerHandling playerHandling;
 
     private List<Asteroid> asteroids;
     private float quantityCorrection = 0;
@@ -32,11 +33,15 @@ public class GenerateAsteroids : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        playerHandling = GetComponent<PlayerHandling>();
+
         asteroids = new List<Asteroid>();
         for (int i = 0; i < asteroidCount; i++)
         {
             generateAsteroid();
         }
+
+        StartCoroutine("DestroyAsteroidsOnGameEnd");
     }
 
     public void generateAsteroid()
@@ -118,6 +123,17 @@ public class GenerateAsteroids : MonoBehaviour
     void Update()
     {
 
+    }
+
+    IEnumerator DestroyAsteroidsOnGameEnd()
+    {
+        while (!playerHandling.gameComplete)
+            yield return null;
+
+        foreach (Asteroid a in asteroids)
+        {
+            Destroy(a.body);
+        }
     }
 }
 

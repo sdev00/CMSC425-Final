@@ -8,7 +8,7 @@ public class PlayerHandling : MonoBehaviour
     public GameObject camera, cameraChild;
     public int sensitivity = 100;
     public bool gameComplete = false;
-    public int health = 5;
+    public int health = 3;
     public ResourceData resources = new ResourceData(0, 0, 0, 0, 0, 0);
     public AudioClip collisionSound;
     AudioSource audioSource;
@@ -144,9 +144,14 @@ public class PlayerHandling : MonoBehaviour
         Debug.Log(collision.relativeVelocity.magnitude);
         if (collision.relativeVelocity.magnitude > 50 && Time.time > invincibleUntil)
         {
+            invincibleUntil = Time.time + invincibilityPeriod;
             audioSource.PlayOneShot(collisionSound);
             health -= 1;
-            invincibleUntil = Time.time + invincibilityPeriod;
+            if (health < 1)
+            {
+                gameComplete = true;
+                audioSource.Stop();
+            }
         }
     }
 }
