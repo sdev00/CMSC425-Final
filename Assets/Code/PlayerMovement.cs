@@ -12,7 +12,7 @@ public class PlayerMovement : MonoBehaviour
     public GameObject progradeMarker, retrogradeMarker, thrustMarker;
 
     private float acceleration = 50;
-    private float rotation = 30;
+    private float rotation = 60;
     private float abilityRecharge = 3;
 
     private float abilitySpeed = 1500;
@@ -35,7 +35,7 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        //Cursor.lockState = CursorLockMode.Locked;
+        Cursor.lockState = CursorLockMode.Locked;
         audioSource = GetComponent<AudioSource>();
     }
 
