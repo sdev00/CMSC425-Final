@@ -21,7 +21,7 @@ public class PlayerHandling : MonoBehaviour
     private float invincibilityPeriod = 2;
 
     private float abilitySpeed = 1500;
-    private int sensitivityAdjustment = 20;
+    private int sensitivityAdjustment = 10;
     private float cameraAngleY = 0;
     private float cameraAngleX = 0;
     private float playerAngleY = 0;
