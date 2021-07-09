@@ -6,12 +6,13 @@ public class GenerateAsteroids : MonoBehaviour
 {
     public static float minSize = 2f;
     public static float maxSize = 50f;
-    private PlayerHandling playerHandling;
+    public float resourcesAdjustment = 1f;
+    public float asteroidsAdjustment = 1f;
 
     private List<Asteroid> asteroids;
-    private float quantityCorrection = 1.5f;
+    private PlayerHandling playerHandling;
 
-    private int asteroidCount = 1000;
+    private int asteroidCount = 3000;
     private int minRange = -2000;
     private int maxRange = 2000;
 
@@ -33,10 +34,12 @@ public class GenerateAsteroids : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        playerHandling = GetComponent<PlayerHandling>();
+    }
 
+    public void generateAllAsteroids()
+    {
         asteroids = new List<Asteroid>();
-        for (int i = 0; i < asteroidCount; i++)
+        for (int i = 0; i < asteroidCount / asteroidsAdjustment; i++)
         {
             generateAsteroid();
         }
@@ -52,7 +55,7 @@ public class GenerateAsteroids : MonoBehaviour
         Vector3 position = new Vector3(x, y, z);
         float size = (Random.value * (maxSize - minSize) + minSize);
 
-        ResourceData resourceData = ResourceData.randomResourceData((int) (size * quantityCorrection));
+        ResourceData resourceData = ResourceData.randomResourceData((int) (size * resourcesAdjustment));
 
 
         float percentIce = 2 * Mathf.Min(resourceData.getPercentH() / 2, resourceData.getPercentO());
@@ -127,6 +130,7 @@ public class GenerateAsteroids : MonoBehaviour
 
     IEnumerator DestroyAsteroidsOnGameEnd()
     {
+        playerHandling = GetComponent<PlayerHandling>();
         while (!playerHandling.gameComplete)
             yield return null;
 

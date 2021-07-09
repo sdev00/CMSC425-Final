@@ -58,7 +58,8 @@ public class EndPlanet : MonoBehaviour
 
     public void generateEndPlanet()
     {
-        ResourceData acquiredResources = GetComponent<PlayerHandling>().resources;
+        //ResourceData acquiredResources = GetComponent<PlayerHandling>().resources;
+        ResourceData acquiredResources = ResourceData.randomResourceData(500);
 
         ResourceData desertContribution = ResourceData.min(desertResources, acquiredResources);
         acquiredResources -= desertContribution;
