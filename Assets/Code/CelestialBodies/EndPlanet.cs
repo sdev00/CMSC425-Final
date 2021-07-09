@@ -52,12 +52,6 @@ public class EndPlanet : MonoBehaviour
     void Start()
     {
         totalResources = oceanResources + continentResources + hillResources + mountainResources + beachResources + desertResources;
-        Debug.Log(totalResources.getH());
-        Debug.Log(totalResources.getC());
-        Debug.Log(totalResources.getN());
-        Debug.Log(totalResources.getO());
-        Debug.Log(totalResources.getP());
-        Debug.Log(totalResources.getSi());
 
         StartCoroutine("DisplayPlanetOnGameEnd");
     }

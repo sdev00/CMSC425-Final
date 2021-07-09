@@ -9,7 +9,7 @@ public class GenerateAsteroids : MonoBehaviour
     private PlayerHandling playerHandling;
 
     private List<Asteroid> asteroids;
-    private float quantityCorrection = 0;
+    private float quantityCorrection = 1.5f;
 
     private int asteroidCount = 1000;
     private int minRange = -2000;
@@ -52,7 +52,7 @@ public class GenerateAsteroids : MonoBehaviour
         Vector3 position = new Vector3(x, y, z);
         float size = (Random.value * (maxSize - minSize) + minSize);
 
-        ResourceData resourceData = ResourceData.randomResourceData((int) size);
+        ResourceData resourceData = ResourceData.randomResourceData((int) (size * quantityCorrection));
 
 
         float percentIce = 2 * Mathf.Min(resourceData.getPercentH() / 2, resourceData.getPercentO());
