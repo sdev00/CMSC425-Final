@@ -463,4 +463,16 @@ public class ResourceData
         return new ResourceData(r1.hydrogen + r2.hydrogen, r1.carbon + r2.carbon, r1.nitrogen + r2.nitrogen,
                                 r1.oxygen + r2.oxygen, r1.phosphorus + r2.phosphorus, r1.silicon + r2.silicon);
     }
+
+    public static ResourceData operator -(ResourceData r1, ResourceData r2)
+    {
+        return new ResourceData(r1.hydrogen - r2.hydrogen, r1.carbon - r2.carbon, r1.nitrogen - r2.nitrogen,
+                                r1.oxygen - r2.oxygen, r1.phosphorus - r2.phosphorus, r1.silicon - r2.silicon);
+    }
+
+    public static ResourceData min(ResourceData r1, ResourceData r2)
+    {
+        return new ResourceData(Mathf.Min(r1.hydrogen, r2.hydrogen), Mathf.Min(r1.carbon, r2.carbon), Mathf.Min(r1.nitrogen, r2.nitrogen),
+                                Mathf.Min(r1.oxygen, r2.oxygen), Mathf.Min(r1.phosphorus, r2.phosphorus), Mathf.Min(r1.silicon, r2.silicon));
+    }
 }

@@ -141,7 +141,6 @@ public class PlayerHandling : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        Debug.Log(collision.relativeVelocity.magnitude);
         if (collision.relativeVelocity.magnitude > 50 && Time.time > invincibleUntil)
         {
             invincibleUntil = Time.time + invincibilityPeriod;

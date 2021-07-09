@@ -292,7 +292,7 @@ MonoBehaviour:
   camera: {fileID: 1246523891}
   cameraChild: {fileID: 963194225}
   sensitivity: 100
-  gameComplete: 0
+  gameComplete: 1
   health: 2
   collisionSound: {fileID: 8300000, guid: 0662db8484bfcad48a167bdcd676bd6c, type: 3}
 --- !u!54 &286481474
