@@ -10,6 +10,7 @@ public class ShowStats : MonoBehaviour
     public GameObject canvas;
     public GameObject timer;
     public Texture heartTexture;
+    public GameObject resourceUI;
     public GameObject hydrogenStat;
     public GameObject carbonStat;
     public GameObject nitrogenStat;
@@ -98,7 +99,9 @@ public class ShowStats : MonoBehaviour
 
         if (player.GetComponent<PlayerHandling>().gameComplete)
         {
-            Destroy(canvas);
+            Destroy(timer);
+            Destroy(gameObject);
+            Destroy(resourceUI);
         }
     }
 

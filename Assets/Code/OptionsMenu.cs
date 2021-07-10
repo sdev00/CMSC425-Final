@@ -9,7 +9,7 @@ public class OptionsMenu : MonoBehaviour
 {
     public static GameObject sliderObject;
     private Slider slider;
-    private int value = 50;
+    private int value = 35;
 
     public static GameObject textObject;
     private TextMeshProUGUI txt;

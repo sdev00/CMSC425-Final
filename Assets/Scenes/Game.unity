@@ -2723,6 +2723,7 @@ MonoBehaviour:
   canvas: {fileID: 333746581}
   timer: {fileID: 624210317}
   heartTexture: {fileID: 2800000, guid: 9d6ecb358a2e7b14f8a176853977ee89, type: 3}
+  resourceUI: {fileID: 1815758801}
   hydrogenStat: {fileID: 225816764}
   carbonStat: {fileID: 1642657674}
   nitrogenStat: {fileID: 1656263072}
