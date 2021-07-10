@@ -89,7 +89,7 @@ public class PlayerHandling : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        //Cursor.lockState = CursorLockMode.Locked;
+        Cursor.lockState = CursorLockMode.Locked;
         audioSource = GetComponent<AudioSource>();
 
         runGame(DifficultyLevel.Hard);
