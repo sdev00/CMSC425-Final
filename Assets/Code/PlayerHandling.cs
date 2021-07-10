@@ -13,6 +13,7 @@ public class PlayerHandling : MonoBehaviour
     public AudioClip collisionSound, miningSound;
     AudioSource audioSource;
     public GameObject progradeMarker, retrogradeMarker, thrustMarker;
+    public GameObject rearRightThrustFlame, rearLeftThrustFlame;
 
     public float maxTime;
     public float endTime;
@@ -208,6 +209,105 @@ public class PlayerHandling : MonoBehaviour
             #else
                         Application.Quit();
             #endif
+        }
+
+        if (gameComplete)
+            return;
+
+        if (Input.GetKey(KeyCode.A))
+        {
+            playerRotationY -= Time.deltaTime * rotationSpeed;
+        }
+        if (Input.GetKey(KeyCode.D))
+        {
+            playerRotationY += Time.deltaTime * rotationSpeed;
+        }
+        if (Input.GetKey(KeyCode.W))
+        {
+            playerRotationX += Time.deltaTime * rotationSpeed;
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            playerRotationX -= Time.deltaTime * rotationSpeed;
+        }
+        if (Input.GetKey(KeyCode.Q))
+        {
+            playerRotationZ += Time.deltaTime * rotationSpeed;
+        }
+        if (Input.GetKey(KeyCode.E))
+        {
+            playerRotationZ -= Time.deltaTime * rotationSpeed;
+        }
+
+        bool appliedNewThrust = false;
+        if (Input.GetKey(KeyCode.Z))
+        {
+            rb.velocity += Time.deltaTime * acceleration * transform.forward;
+            appliedNewThrust = true;
+        }
+        if (Input.GetKey(KeyCode.X))
+        {
+            rb.velocity -= Time.deltaTime * acceleration * transform.forward;
+            appliedNewThrust = true;
+        }
+        if (Input.GetKey(KeyCode.Space))
+        {
+            rb.velocity += Time.deltaTime * acceleration * transform.up;
+            appliedNewThrust = true;
+        }
+        if (Input.GetKey(KeyCode.LeftControl))
+        {
+            rb.velocity -= Time.deltaTime * acceleration * transform.up;
+            appliedNewThrust = true;
+        }
+        
+        if (appliedNewThrust) {
+            if (!isThrusting) {
+                audioSource.Play(0);
+            }
+            isThrusting = true;
+        } else {
+            if (isThrusting) {
+                audioSource.Stop();
+            }
+            isThrusting = false;
+        }
+
+        if (isThrusting) {
+            Vector3 toCamera;
+            rearRightThrustFlame.SetActive(true);
+            toCamera = cameraChild.transform.position - rearRightThrustFlame.transform.position;
+            rearRightThrustFlame.transform.LookAt(rearRightThrustFlame.transform.position + rearRightThrustFlame.transform.forward, toCamera);
+        
+            rearLeftThrustFlame.SetActive(true);
+            toCamera = cameraChild.transform.position - rearLeftThrustFlame.transform.position;
+            rearLeftThrustFlame.transform.LookAt(rearLeftThrustFlame.transform.position + rearLeftThrustFlame.transform.forward, toCamera);
+
+        } else {
+            rearRightThrustFlame.SetActive(false);
+            rearLeftThrustFlame.SetActive(false);
+        }
+
+        playerAngleY = playerRotationY;
+        playerAngleX = playerRotationX;
+        playerAngleZ = playerRotationZ;
+        
+        rb.transform.rotation = Quaternion.Euler(0, playerAngleY, 0) * 
+                Quaternion.Euler(playerAngleX, 0, 0) *
+                Quaternion.Euler(0, 0, playerAngleZ);
+
+        // cameraAngleY += playerRotationY;
+        // cameraAngleX += playerRotationX;
+        // playerRotationX = playerRotationY = playerRotationZ = 0;
+        cameraAngleY += Input.GetAxis("Mouse X") * sensitivity / sensitivityAdjustment;
+        cameraAngleX = Mathf.Clamp(cameraAngleX - Input.GetAxis("Mouse Y") * sensitivity / sensitivityAdjustment, -maxcameraAngleX, maxcameraAngleX);
+
+        
+        cameraChild.transform.position = Vector3.MoveTowards(cameraChild.transform.position, camera.transform.position, Input.GetAxis("Mouse ScrollWheel") * scrollStep);
+        camera.transform.rotation = Quaternion.Euler(0, cameraAngleY, 0) * Quaternion.Euler(cameraAngleX, 0, 0);
+
+        progradeMarker.transform.rotation = Quaternion.LookRotation(rb.velocity);
+        retrogradeMarker.transform.rotation = progradeMarker.transform.rotation * Quaternion.Euler(0, 180, 0);
         }        
     }
 
