@@ -475,4 +475,9 @@ public class ResourceData
         return new ResourceData(Mathf.Min(r1.hydrogen, r2.hydrogen), Mathf.Min(r1.carbon, r2.carbon), Mathf.Min(r1.nitrogen, r2.nitrogen),
                                 Mathf.Min(r1.oxygen, r2.oxygen), Mathf.Min(r1.phosphorus, r2.phosphorus), Mathf.Min(r1.silicon, r2.silicon));
     }
+
+    public static bool allResourcesGathered(ResourceData required, ResourceData collected)
+    {
+        return (required - min(required, collected)).getTotal() == 0;
+    }
 }

@@ -2,14 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class ShowStats : MonoBehaviour
 {
     public GameObject player;
     public GameObject canvas;
-    public GameObject resourceStats;
     public GameObject timer;
     public Texture heartTexture;
+    public GameObject hydrogenStat;
+    public GameObject carbonStat;
+    public GameObject nitrogenStat;
+    public GameObject oxygenStat;
+    public GameObject phosphorusStat;
+    public GameObject siliconStat;
     private List<GameObject> healthBar;
     private Text text;
     private Rigidbody rb;
@@ -43,6 +49,13 @@ public class ShowStats : MonoBehaviour
 
             heart.SetActive(true);
         }
+
+        hydrogenStat.GetComponent<TextMeshProUGUI>().text = "asdfasdfasdf";
+        carbonStat.GetComponent<TextMeshProUGUI>().text = "asdfasdfasdf";
+        nitrogenStat.GetComponent<TextMeshProUGUI>().text = "asdfasdfasdf";
+        oxygenStat.GetComponent<TextMeshProUGUI>().text = "asdfasdfasdf";
+        phosphorusStat.GetComponent<TextMeshProUGUI>().text = "asdfasdfasdf";
+        siliconStat.GetComponent<TextMeshProUGUI>().text = "asdfasdfasdf";
     }
 
     // Update is called once per frame
@@ -53,29 +66,29 @@ public class ShowStats : MonoBehaviour
         string dist;
         if (Physics.Raycast(r, out hit))
         {
-            dist = "" + (int) RoundToSignificantDigits(hit.distance, 2);
+            dist = "" + (int)RoundToSignificantDigits(hit.distance, 2);
         }
         else
         {
             dist = "???";
         }
-        
 
-        text.text = "Speed: " + (int) rb.velocity.magnitude + " m/s" + 
+
+        text.text = "Speed: " + (int)rb.velocity.magnitude + " m/s" +
             "\n" + "Distance: " + dist + " m";
 
-        int remainingTime = (int) (playerHandling.endTime - Time.time + 1);
-        timer.GetComponent<Text>().text = "" + remainingTime / 60 + (remainingTime % 60 < 10? ":0" : ":") + remainingTime % 60;
-        timer.GetComponent<Text>().color = Color32.Lerp(new Color32(255, 0, 0, 200), new Color32(0, 255, 0, 200), remainingTime /playerHandling.maxTime);
+        int remainingTime = (int)(playerHandling.endTime - Time.time + 1);
+        timer.GetComponent<Text>().text = "" + remainingTime / 60 + (remainingTime % 60 < 10 ? ":0" : ":") + remainingTime % 60;
+        timer.GetComponent<Text>().color = Color32.Lerp(new Color32(255, 0, 0, 200), new Color32(0, 255, 0, 200), remainingTime / playerHandling.maxTime);
 
         ResourceData resources = playerHandling.resources;
-        resourceStats.GetComponent<Text>().text =
-            "Hydrogen (H): " + resources.getH() +
-            "\nCarbon(C): " + resources.getC() +
-            "\nNitrogen(N): " + resources.getN() +
-            "\nOxygen(O): " + resources.getO() +
-            "\nPhosphorus(P): " + resources.getP() +
-            "\nSilicon(Si): " + resources.getSi();
+
+        hydrogenStat.GetComponent<TextMeshProUGUI>().text = "" + resources.getH();
+        carbonStat.GetComponent<TextMeshProUGUI>().text = "" + resources.getC();
+        nitrogenStat.GetComponent<TextMeshProUGUI>().text = "" + resources.getN();
+        oxygenStat.GetComponent<TextMeshProUGUI>().text = "" + resources.getO();
+        phosphorusStat.GetComponent<TextMeshProUGUI>().text = "" + resources.getP();
+        siliconStat.GetComponent<TextMeshProUGUI>().text = "" + resources.getSi();
 
         while (playerHandling.health < healthBar.Count)
         {
@@ -83,10 +96,9 @@ public class ShowStats : MonoBehaviour
             healthBar.RemoveAt(healthBar.Count - 1);
         }
 
-        if (player.GetComponent<PlayerHandling>().gameComplete) {
-            Destroy(resourceStats);
-            Destroy(timer);
-            Destroy(gameObject);
+        if (player.GetComponent<PlayerHandling>().gameComplete)
+        {
+            Destroy(canvas);
         }
     }
 

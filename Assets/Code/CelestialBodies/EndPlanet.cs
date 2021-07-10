@@ -18,7 +18,7 @@ public class EndPlanet : MonoBehaviour
     private ResourceData mountainResources = new ResourceData(6, 12, 3, 6, 3, 0);
     private ResourceData beachResources = new ResourceData(20, 0, 0, 40, 0, 20);
     private ResourceData desertResources = new ResourceData(0, 0, 0, 50, 0, 25);
-    private ResourceData totalResources;
+    public ResourceData totalResources;
 
     private Color32 healthyOcean = new Color32(0, 60, 200, 0);
     private Color32 unhealthyOcean = new Color32(50, 0, 0, 0);

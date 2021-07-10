@@ -12,7 +12,7 @@ public class GenerateAsteroids : MonoBehaviour
     private List<Asteroid> asteroids;
     private PlayerHandling playerHandling;
 
-    private int asteroidCount = 3000;
+    private int asteroidCount = 1000;
     private int minRange = -2000;
     private int maxRange = 2000;
 
