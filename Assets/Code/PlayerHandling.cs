@@ -87,6 +87,7 @@ public class PlayerHandling : MonoBehaviour
 
     public void runGame(DifficultyLevel diffLevel)
     {
+        gameComplete = false;
         difficultySetup(diffLevel);
         asteroidGen.generateAllAsteroids();
         StartCoroutine("Movement");

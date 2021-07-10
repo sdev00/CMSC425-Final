@@ -50,12 +50,20 @@ public class PauseMenu : MonoBehaviour
     public void Options() 
     {
         Debug.Log("Loading menu");
+        paused = false;
+        pauseMenuUI.SetActive(false);
+        Time.timeScale = 1f;
+        player.GetComponent<PlayerHandling>().enabled = true;
         SceneManager.LoadScene("Options");
     }
 
     public void Quit() 
     {
         Debug.Log("Quit");
+        paused = false;
+        pauseMenuUI.SetActive(false);
+        Time.timeScale = 1f;
+        player.GetComponent<PlayerHandling>().enabled = true;
         SceneManager.LoadScene("Menu");
     }
 }

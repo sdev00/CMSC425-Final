@@ -149,7 +149,7 @@ public class Asteroid
     public ResourceData resourceData;
     private int smoothness;
     private float sizeVariation = 0.8f;
-    private static float asteroidDensity = 0.05f;
+    private static float asteroidDensity = 0.15f;
 
     public Asteroid(Vector3 position, float size, TerrainLayer[] terrain, ResourceData resourceData)
     {
