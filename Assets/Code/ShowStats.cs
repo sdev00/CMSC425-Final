@@ -8,6 +8,7 @@ public class ShowStats : MonoBehaviour
     public GameObject player;
     public GameObject canvas;
     public GameObject resourceStats;
+    public GameObject timer;
     public Texture heartTexture;
     private List<GameObject> healthBar;
     private Text text;
@@ -63,6 +64,10 @@ public class ShowStats : MonoBehaviour
         text.text = "Speed: " + (int) rb.velocity.magnitude + " m/s" + 
             "\n" + "Distance: " + dist + " m";
 
+        int remainingTime = (int) (playerHandling.endTime - Time.time + 1);
+        timer.GetComponent<Text>().text = "" + remainingTime / 60 + (remainingTime % 60 < 10? ":0" : ":") + remainingTime % 60;
+        timer.GetComponent<Text>().color = Color32.Lerp(new Color32(255, 0, 0, 200), new Color32(0, 255, 0, 200), remainingTime /playerHandling.maxTime);
+
         ResourceData resources = playerHandling.resources;
         resourceStats.GetComponent<Text>().text =
             "Hydrogen (H): " + resources.getH() +
@@ -80,6 +85,7 @@ public class ShowStats : MonoBehaviour
 
         if (player.GetComponent<PlayerHandling>().gameComplete) {
             Destroy(resourceStats);
+            Destroy(timer);
             Destroy(gameObject);
         }
     }
