@@ -13,6 +13,7 @@ public class PlayerHandling : MonoBehaviour
     public AudioClip collisionSound, miningSound;
     AudioSource audioSource;
     public GameObject progradeMarker, retrogradeMarker, thrustMarker;
+    public GameObject rearRightThrustFlame, rearLeftThrustFlame;
 
     private float gameDuration = 300;
     private float acceleration = 50;
@@ -119,6 +120,21 @@ public class PlayerHandling : MonoBehaviour
                 audioSource.Stop();
             }
             isThrusting = false;
+        }
+
+        if (isThrusting) {
+            Vector3 toCamera;
+            rearRightThrustFlame.SetActive(true);
+            toCamera = cameraChild.transform.position - rearRightThrustFlame.transform.position;
+            rearRightThrustFlame.transform.LookAt(rearRightThrustFlame.transform.position + rearRightThrustFlame.transform.forward, toCamera);
+        
+            rearLeftThrustFlame.SetActive(true);
+            toCamera = cameraChild.transform.position - rearLeftThrustFlame.transform.position;
+            rearLeftThrustFlame.transform.LookAt(rearLeftThrustFlame.transform.position + rearLeftThrustFlame.transform.forward, toCamera);
+
+        } else {
+            rearRightThrustFlame.SetActive(false);
+            rearLeftThrustFlame.SetActive(false);
         }
 
         playerAngleY = playerRotationY;
