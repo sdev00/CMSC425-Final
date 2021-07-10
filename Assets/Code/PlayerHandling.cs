@@ -281,7 +281,6 @@ public class PlayerHandling : MonoBehaviour
             rearLeftThrustFlame.SetActive(true);
             toCamera = cameraChild.transform.position - rearLeftThrustFlame.transform.position;
             rearLeftThrustFlame.transform.LookAt(rearLeftThrustFlame.transform.position + rearLeftThrustFlame.transform.forward, toCamera);
-
         }
         else
         {
@@ -340,6 +339,7 @@ public class PlayerHandling : MonoBehaviour
                 if (ResourceData.allResourcesGathered(GetComponent<EndPlanet>().totalResources, resources))
                 {
                     gameComplete = true;
+                    audioSource.Stop();
                 }
             }
         }
