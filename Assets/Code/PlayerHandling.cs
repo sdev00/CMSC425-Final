@@ -10,10 +10,15 @@ public class PlayerHandling : MonoBehaviour
     public bool gameComplete = false;
     public int health;
     public ResourceData resources = ResourceData.emptyResourceData();
+
     public AudioClip collisionSound, miningSound;
     AudioSource audioSource;
+
     public GameObject progradeMarker, retrogradeMarker, thrustMarker;
     public GameObject rearRightThrustFlame, rearLeftThrustFlame;
+
+    public GameObject finalScore;
+    public GameObject finalMessage;
 
     private GameObject setupObject;
 

@@ -11,6 +11,7 @@ public class ShowStats : MonoBehaviour
     public GameObject timer;
     public Texture heartTexture;
     public GameObject resourceUI;
+    public GameObject throttleUI;
     public GameObject hydrogenStat;
     public GameObject carbonStat;
     public GameObject nitrogenStat;
@@ -102,6 +103,12 @@ public class ShowStats : MonoBehaviour
             Destroy(timer);
             Destroy(gameObject);
             Destroy(resourceUI);
+            Destroy(throttleUI);
+
+            while (playerHandling.health < healthBar.Count)
+            {
+                Destroy(healthBar[healthBar.Count - 1]);
+            }
         }
     }
 
