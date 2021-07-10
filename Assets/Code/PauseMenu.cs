@@ -56,12 +56,15 @@ public class PauseMenu : MonoBehaviour
     public void Quit() 
     {
         Debug.Log("Quit");
-        #if UNITY_EDITOR
-                    // Application.Quit() does not work in the editor so
-                    // UnityEditor.EditorApplication.isPlaying need to be set to false to end the game
-                    UnityEditor.EditorApplication.isPlaying = false;
-        #else
-                    Application.Quit();
-        #endif
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            #if UNITY_EDITOR
+                     // Application.Quit() does not work in the editor so
+                     // UnityEditor.EditorApplication.isPlaying need to be set to false to end the game
+                     UnityEditor.EditorApplication.isPlaying = false;
+            #else
+                        Application.Quit();
+            #endif
+        }
     }
 }
