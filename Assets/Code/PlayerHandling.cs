@@ -308,7 +308,6 @@ public class PlayerHandling : MonoBehaviour
 
         progradeMarker.transform.rotation = Quaternion.LookRotation(rb.velocity);
         retrogradeMarker.transform.rotation = progradeMarker.transform.rotation * Quaternion.Euler(0, 180, 0);
-        }        
     }
 
     void OnCollisionEnter(Collision collision)
