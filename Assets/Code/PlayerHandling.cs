@@ -10,10 +10,17 @@ public class PlayerHandling : MonoBehaviour
     public bool gameComplete = false;
     public int health;
     public ResourceData resources = ResourceData.emptyResourceData();
+
     public AudioClip collisionSound, miningSound;
     AudioSource audioSource;
+
     public GameObject progradeMarker, retrogradeMarker, thrustMarker;
     public GameObject rearRightThrustFlame, rearLeftThrustFlame;
+
+    public GameObject finalScore;
+    public GameObject finalMessage;
+
+    private GameObject setupObject;
 
     public float maxTime;
     public float endTime;
@@ -23,7 +30,7 @@ public class PlayerHandling : MonoBehaviour
     private float invincibilityPeriod = 2;
 
     private float maxMineableSpeed;
-    private int sensitivityAdjustment = 10;
+    private int sensitivityAdjustment = 20;
     private float cameraAngleY = 0;
     private float cameraAngleX = 0;
     private float playerAngleY = 0;
@@ -55,15 +62,15 @@ public class PlayerHandling : MonoBehaviour
             case DifficultyLevel.Medium:
                 d.health = 5;
                 d.timeSeconds = 360;
-                d.asteroidSpread = 8;
+                d.asteroidSpread = 4;
                 d.asteroidYieldMultiplier = 1;
                 d.maxMineableSpeed = 50;
                 break;
 
             case DifficultyLevel.Hard:
                 d.health = 2;
-                d.timeSeconds = 600;
-                d.asteroidSpread = 60;
+                d.timeSeconds = 720;
+                d.asteroidSpread = 25;
                 d.asteroidYieldMultiplier = 0.75f;
                 d.maxMineableSpeed = 8;
                 break;
@@ -80,6 +87,7 @@ public class PlayerHandling : MonoBehaviour
 
     public void runGame(DifficultyLevel diffLevel)
     {
+        gameComplete = false;
         difficultySetup(diffLevel);
         asteroidGen.generateAllAsteroids();
         StartCoroutine("Movement");
@@ -91,8 +99,10 @@ public class PlayerHandling : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         Cursor.lockState = CursorLockMode.Locked;
         audioSource = GetComponent<AudioSource>();
+        setupObject = GameObject.FindWithTag("UserSetup");
+        sensitivity = setupObject.GetComponent<TrackUserSetup>().sensitivity;
 
-        runGame(DifficultyLevel.Hard);
+        runGame(setupObject.GetComponent<TrackUserSetup>().difficulty);
     }
 
     IEnumerator Movement()
@@ -200,17 +210,6 @@ public class PlayerHandling : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKey(KeyCode.Escape))
-        {
-            #if UNITY_EDITOR
-                     // Application.Quit() does not work in the editor so
-                     // UnityEditor.EditorApplication.isPlaying need to be set to false to end the game
-                     UnityEditor.EditorApplication.isPlaying = false;
-            #else
-                        Application.Quit();
-            #endif
-        }
-
         if (gameComplete)
             return;
 
@@ -260,30 +259,37 @@ public class PlayerHandling : MonoBehaviour
             rb.velocity -= Time.deltaTime * acceleration * transform.up;
             appliedNewThrust = true;
         }
-        
-        if (appliedNewThrust) {
-            if (!isThrusting) {
+
+        if (appliedNewThrust)
+        {
+            if (!isThrusting)
+            {
                 audioSource.Play(0);
             }
             isThrusting = true;
-        } else {
-            if (isThrusting) {
+        }
+        else
+        {
+            if (isThrusting)
+            {
                 audioSource.Stop();
             }
             isThrusting = false;
         }
 
-        if (isThrusting) {
+        if (isThrusting)
+        {
             Vector3 toCamera;
             rearRightThrustFlame.SetActive(true);
             toCamera = cameraChild.transform.position - rearRightThrustFlame.transform.position;
             rearRightThrustFlame.transform.LookAt(rearRightThrustFlame.transform.position + rearRightThrustFlame.transform.forward, toCamera);
-        
+
             rearLeftThrustFlame.SetActive(true);
             toCamera = cameraChild.transform.position - rearLeftThrustFlame.transform.position;
             rearLeftThrustFlame.transform.LookAt(rearLeftThrustFlame.transform.position + rearLeftThrustFlame.transform.forward, toCamera);
-
-        } else {
+        }
+        else
+        {
             rearRightThrustFlame.SetActive(false);
             rearLeftThrustFlame.SetActive(false);
         }
@@ -291,8 +297,8 @@ public class PlayerHandling : MonoBehaviour
         playerAngleY = playerRotationY;
         playerAngleX = playerRotationX;
         playerAngleZ = playerRotationZ;
-        
-        rb.transform.rotation = Quaternion.Euler(0, playerAngleY, 0) * 
+
+        rb.transform.rotation = Quaternion.Euler(0, playerAngleY, 0) *
                 Quaternion.Euler(playerAngleX, 0, 0) *
                 Quaternion.Euler(0, 0, playerAngleZ);
 
@@ -302,7 +308,7 @@ public class PlayerHandling : MonoBehaviour
         cameraAngleY += Input.GetAxis("Mouse X") * sensitivity / sensitivityAdjustment;
         cameraAngleX = Mathf.Clamp(cameraAngleX - Input.GetAxis("Mouse Y") * sensitivity / sensitivityAdjustment, -maxcameraAngleX, maxcameraAngleX);
 
-        
+
         cameraChild.transform.position = Vector3.MoveTowards(cameraChild.transform.position, camera.transform.position, Input.GetAxis("Mouse ScrollWheel") * scrollStep);
         camera.transform.rotation = Quaternion.Euler(0, cameraAngleY, 0) * Quaternion.Euler(cameraAngleX, 0, 0);
 
@@ -334,6 +340,12 @@ public class PlayerHandling : MonoBehaviour
                 resources += ad.resources;
                 audioSource.PlayOneShot(miningSound);
                 ad.resources = ResourceData.emptyResourceData();
+
+                if (ResourceData.allResourcesGathered(GetComponent<EndPlanet>().totalResources, resources))
+                {
+                    gameComplete = true;
+                    audioSource.Stop();
+                }
             }
         }
     }

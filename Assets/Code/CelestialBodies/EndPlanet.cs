@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EndPlanet : MonoBehaviour
 {
@@ -18,7 +19,7 @@ public class EndPlanet : MonoBehaviour
     private ResourceData mountainResources = new ResourceData(6, 12, 3, 6, 3, 0);
     private ResourceData beachResources = new ResourceData(20, 0, 0, 40, 0, 20);
     private ResourceData desertResources = new ResourceData(0, 0, 0, 50, 0, 25);
-    private ResourceData totalResources;
+    public ResourceData totalResources;
 
     private Color32 healthyOcean = new Color32(0, 60, 200, 0);
     private Color32 unhealthyOcean = new Color32(50, 0, 0, 0);
@@ -87,7 +88,9 @@ public class EndPlanet : MonoBehaviour
         float score = (float) System.Math.Round(100 * (oceanContribution.getTotal() + beachContribution.getTotal() + continentContribution.getTotal() + 
             hillContribution.getTotal() + mountainContribution.getTotal() + desertContribution.getTotal()) / (float) totalResources.getTotal(), 1);
 
-        Debug.Log("Score: " + score);
+        GetComponent<PlayerHandling>().finalScore.GetComponent<Text>().text = "Score\n" + score + "%";
+        GetComponent<PlayerHandling>().finalMessage.GetComponent<Text>().text = score > 75? 
+            "Congratulations.\nYou have terraformed the planet...\nHumanity is saved!" : "You failed.\nHumanity's last chance slipped away...\nTry again?";
 
         TerrainLayer mountainLayer =
             new TerrainLayer(5, 8,
